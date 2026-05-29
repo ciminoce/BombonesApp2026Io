@@ -10,7 +10,11 @@ namespace BombonesApp2026.Datos.EntityTypeConfiguration
         {
             builder.ToTable("TipoBombones");
             builder.HasKey(tb => tb.TipoBombonId);
+            builder.Property(tb => tb.Nombre).IsRequired().HasMaxLength(50);
+            builder.Property(tb => tb.Descripcion).HasMaxLength(150);
+            builder.HasIndex(tb => tb.Nombre, "IX_TipoBombones_Nombre").IsUnique();
             builder.Property(tb => tb.RowVersion).IsRowVersion();
+            //TODO: Luego relacionar con Bombones
         }
     }
 }

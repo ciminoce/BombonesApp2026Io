@@ -5,9 +5,12 @@ using BombonesApp2026.Servicios.DTOs.TipoBombon;
 using BombonesApp2026.Servicios.Intefaces;
 using BombonesApp2026.Servicios.Mapeadores;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace BombonesApp2026.Servicios.Servicios
 {
+    //TODO: Agregar manejo de excepciones específicas para cada caso
+    //y evitar el manejo genérico de excepciones, además de agregar manejo de concurrencia para evitar problemas en escenarios con múltiples usuarios editando o eliminando el mismo registro al mismo tiempo
     public class TipoBombonServicio : ITipoBombonServicio
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -45,23 +48,31 @@ namespace BombonesApp2026.Servicios.Servicios
             }
         }
 
-        public Result Borrar(int id)
+        public Result Borrar(TipoBombonDeleteDto tipoDto)
         {
-            var tipoBombon = _unitOfWork.TipoBombones.ObtenerPorId(id);
-            if (tipoBombon == null)
-            {
-                return Result.Failure("Tipo de bombón no encontrado!!!");
-            }
             try
             {
-                _unitOfWork.TipoBombones.Borrar(tipoBombon.TipoBombonId);
+                _unitOfWork.TipoBombones.Borrar(tipoDto.TipoBombonId,
+                    tipoDto.RowVersion);
                 _unitOfWork.Save();
                 return Result.Success();
             }
+            catch(DbUpdateConcurrencyException ex)
+            {
+                _unitOfWork.RollBack();
+                return Result.ConcurrencyFailure("Otro usuario modificó el registro\nLa grilla se recargará automáticamente");
+
+            }
+            catch (KeyNotFoundException)
+            {
+                _unitOfWork.RollBack();
+                return Result.Failure(@$"Tipo de bombon con ID: {tipoDto.TipoBombonId}
+                        no econtrado");
+            }
             catch (Exception ex)
             {
-
-                return Result.Failure(ex.Message);
+                _unitOfWork.RollBack();
+                return Result.Failure($"Error al intentar borrar un tipo de bombón {ex.Message}");
             }
         }
 
@@ -148,5 +159,36 @@ namespace BombonesApp2026.Servicios.Servicios
                 return Result.Failure(ex.Message);
             }
         }
+
+        public Result<List<TipoBombonListDto>> FiltrarPorActivo(bool activo)
+        {
+            try
+            {
+                var query = _unitOfWork.TipoBombones.Query();
+                var lista=query.Where(tb=>tb.Activo == activo);
+                var listaDto = lista.Select(tb => TipoBombonMapper.ToListDto(tb)).ToList();
+                return Result<List<TipoBombonListDto>>.Success(listaDto);
+            }
+            catch (Exception ex)
+            {
+
+                return Result<List<TipoBombonListDto>>.Failure($"Error al intentar filtrar los tipos de Bombones: {ex.Message}");
+            }
+        }
+
+        public Result<TipoBombonDeleteDto> ObtenerParaBorrar(int id)
+        {
+            var tipoBombon = _unitOfWork.TipoBombones.ObtenerPorId(id);
+            if (tipoBombon != null)
+            {
+                var tipoBombonDto = TipoBombonMapper.ToDeleteDto(tipoBombon);
+                return Result<TipoBombonDeleteDto>.Success(tipoBombonDto);
+            }
+            else
+            {
+                return Result<TipoBombonDeleteDto>.Failure($"Error al intentar obtener el tipo de bombón ");
+            }
+        }
+
     }
 }

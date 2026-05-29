@@ -2,7 +2,7 @@
 
 namespace BombonesApp2026.Datos.Interfaces
 {
-    public interface ITipoBombonRepositorio:IRepositorioGenerico<TipoBombon>
+    public interface ITipoBombonRepositorio:IRepositorioConcurrente<TipoBombon>
     {
         bool Existe(TipoBombon tipoBombon);
         bool EstaRelacionado(TipoBombon tipoBombon);

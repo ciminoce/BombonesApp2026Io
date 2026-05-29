@@ -8,9 +8,12 @@ namespace BombonesApp2026.Servicios.Intefaces
         Result<List<TipoBombonListDto>> ObtenerTodos();
         Result<TipoBombonListDto> ObtenerPorId(int id);
         Result<TipoBombonUpdateDto> ObtenerParaEditar(int id);
+        Result<TipoBombonDeleteDto> ObtenerParaBorrar(int id);
+
         Result Agregar(TipoBombonCreateDto tipoBombonDto);
         Result Editar(TipoBombonUpdateDto tipoBombonDto);
-        Result Borrar(int id);
+        Result Borrar(TipoBombonDeleteDto tipoBombonDto);
+        Result<List<TipoBombonListDto>> FiltrarPorActivo(bool activo);
 
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace BombonesApp2026.Entidades
+﻿using BombonesApp2026.Entidades.Interfaces;
+
+namespace BombonesApp2026.Entidades
 {
-    public class TipoBombon
+    public class TipoBombon:IConcurrencyEntity
     {
         public int TipoBombonId { get; set; }
         public string Nombre { get; set; } = null!;

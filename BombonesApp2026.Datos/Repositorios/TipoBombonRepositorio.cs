@@ -3,7 +3,7 @@ using BombonesApp2026.Entidades;
 
 namespace BombonesApp2026.Datos.Repositorios
 {
-    public class TipoBombonRepositorio : RepositorioGenerico<TipoBombon>, ITipoBombonRepositorio
+    public class TipoBombonRepositorio : RepositorioConcurrente<TipoBombon>, ITipoBombonRepositorio
     {
         public TipoBombonRepositorio(BombonesDbContext context) : base(context)
         {

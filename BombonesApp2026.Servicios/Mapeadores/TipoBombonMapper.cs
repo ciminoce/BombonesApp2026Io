@@ -47,5 +47,14 @@ namespace BombonesApp2026.Servicios.Mapeadores
                 RowVersion = tipoBombon.RowVersion,
             };
         }
+
+        public static TipoBombonDeleteDto ToDeleteDto(TipoBombon tipoBombon)
+        {
+            return new TipoBombonDeleteDto
+            {
+                TipoBombonId = tipoBombon.TipoBombonId,
+                RowVersion = tipoBombon.RowVersion,
+            };
+        }
     }
 }

@@ -16,83 +16,43 @@ namespace BombonesApp2026.Datos.Repositorios
 
         public void Agregar(T entidad)
         {
-            try
-            {
-                _dbSet.Add(entidad);
-
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception($"Error al intentar agregar un registro en la tabla de {typeof(T).Name}",ex);
-            } 
+            _dbSet.Add(entidad);
         }
-
-        public void Borrar(int id)
+        public virtual void Borrar(int id)
         {
-            try
+            var entidad = _dbSet.Find(id);
+            if (entidad is null)
             {
-                var entidad = _dbSet.Find(id);
-                if (entidad is null)
-                {
-                    throw new KeyNotFoundException($"No se pudo borrar la entidad ID: {id} de la tabla {typeof(T).Name}");
-                }
-                _dbSet.Remove(entidad);
+                throw new KeyNotFoundException($"No se pudo borrar la entidad ID: {id} de la tabla {typeof(T).Name}");
             }
-            catch (Exception ex)
-            {
-
-                throw new Exception($"Error al intentar borrar un registro en la tabla de {typeof(T).Name}", ex);
-            }
+            _dbSet.Remove(entidad);
         }
 
         public void Editar(T entidad, int id)
         {
-            try
+            var entidadEnDb = _dbSet.Find(id);
+            if (entidadEnDb is null)
             {
-                var entidadEnDb = _dbSet.Find(id);
-                if (entidadEnDb is null) return;
-                _dbSet.Entry(entidadEnDb).CurrentValues.SetValues(entidad);
+                throw new KeyNotFoundException($"No se pudo borrar la entidad ID: {id} de la tabla {typeof(T).Name}");
             }
-            catch (Exception ex)
-            {
-
-                throw new Exception($"Error al intentar editar un registro en la tabla de {typeof(T).Name}", ex);
-            }
+            _dbSet.Entry(entidadEnDb).CurrentValues.SetValues(entidad);
         }
 
         public T? ObtenerPorId(int id)
         {
-            try
-            {
-                return _dbSet.Find(id);
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception($"Error al intentar buscar un registro en la tabla de {typeof(T).Name}", ex);
-            }
+            return _dbSet.Find(id);
         }
 
         public List<T> ObtenerTodos()
         {
-            try
-            {
-                return _dbSet
-                    .AsNoTracking()
-                    .ToList();
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception($"Error al intentar recuperar los registros en la tabla de {typeof(T).Name}", ex);
-            }
+            return _dbSet
+                .AsNoTracking()
+                .ToList();
         }
-
         public IQueryable<T> Query()
         {
-            return _dbSet.AsNoTracking()
-                .AsQueryable();
+            return _dbSet.AsNoTracking();
+                
         }
     }
 }

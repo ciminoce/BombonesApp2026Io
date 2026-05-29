@@ -1,5 +1,6 @@
 ﻿namespace BombonesApp2026.Servicios.DTOs.TipoBombon
 {
+    //TODO: Agregar clase TipoBombonDeleteDto para manejar los casos de eliminación y evitar problemas de concurrencia
     public class TipoBombonUpdateDto
     {
         public int TipoBombonId { get; set; }

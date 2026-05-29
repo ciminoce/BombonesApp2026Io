@@ -1,12 +1,15 @@
 ﻿using BombonesApp2026.Windows.Classes;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BombonesApp2026.Windows
 {
     public partial class frmPrincipal : Form
     {
-        public frmPrincipal()
+        private readonly IServiceProvider _serviceProvider;
+        public frmPrincipal(IServiceProvider serviceProvider)
         {
             InitializeComponent();
+            _serviceProvider = serviceProvider;
         }
 
 
@@ -23,6 +26,15 @@ namespace BombonesApp2026.Windows
         private void btnLogout_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void btnTiposBombones_Click(object sender, EventArgs e)
+        {
+            using (var frm=_serviceProvider.GetRequiredService<frmTiposDeBombones>())
+            {
+                frm.Text = "Lista de Tipos de Bombones";
+                frm.ShowDialog();
+            }
         }
     }
 }
