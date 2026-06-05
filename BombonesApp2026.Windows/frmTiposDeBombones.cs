@@ -141,31 +141,30 @@ namespace BombonesApp2026.Windows
 
         private void tsbBorrar_Click(object sender, EventArgs e)
         {
-            if (dgvDatos.SelectedRows.Count==0)
+            if (dgvDatos.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Debe seleccionar una fila",
                     "Advertencia",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            var filaSeleccionada=dgvDatos.SelectedRows[0];
+            var filaSeleccionada = dgvDatos.SelectedRows[0];
             if (filaSeleccionada.Tag is null) return;
-            TipoBombonListDto tipoListDto =(TipoBombonListDto) filaSeleccionada.Tag;
-            using (var scope=_serviceProvider.CreateScope())
+            TipoBombonListDto tipoListDto = (TipoBombonListDto)filaSeleccionada.Tag;
+            using (var scope = _serviceProvider.CreateScope())
             {
                 var tipoBombonServicio = scope.ServiceProvider
                         .GetRequiredService<ITipoBombonServicio>();
                 var resultadoConsulta = tipoBombonServicio.ObtenerParaBorrar(tipoListDto.TipoBombonId);
                 if (resultadoConsulta.IsFailure)
                 {
-                    string errores = string.Join("\n", resultadoConsulta.Errors);
-                    MessageBox.Show(errores, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
                     return;
 
                 }
                 var tipoDeleteDto = resultadoConsulta.Value;
-                var dr=MessageBox.Show($"¿Desea borrar el tipo {tipoListDto.Nombre}?",
-                    "Confirmar Borrado",MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                var dr = MessageBox.Show($"¿Desea borrar el tipo {tipoListDto.Nombre}?",
+                    "Confirmar Borrado", MessageBoxButtons.YesNo, MessageBoxIcon.Question,
                     MessageBoxDefaultButton.Button2);
                 if (dr == DialogResult.No) return;
                 try
@@ -174,16 +173,14 @@ namespace BombonesApp2026.Windows
                         .Borrar(tipoDeleteDto!);
                     if (resultadoEliminacion.IsConcurrencyConflict)
                     {
-                        string errores = string.Join("\n", resultadoConsulta.Errors);
-                        MessageBox.Show(errores, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ErrorHelper.MostrarErrores(resultadoEliminacion.Errors);
                         RecargarGrilla();
                         return;
 
                     }
                     if (resultadoEliminacion.IsFailure)
                     {
-                        string errores = string.Join("\n", resultadoConsulta.Errors);
-                        MessageBox.Show(errores, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ErrorHelper.MostrarErrores(resultadoEliminacion.Errors);
                         return;
 
                     }
@@ -196,6 +193,71 @@ namespace BombonesApp2026.Windows
                 {
 
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void tsbNuevo_Click(object sender, EventArgs e)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                using (frmTipoDeBombonesAe frm = scope.ServiceProvider.GetRequiredService<frmTipoDeBombonesAe>())
+                {
+                    frm.Text = "Nuevo Tipo de Bombón";
+                    frm.ShowDialog();
+                    if (frm.DataChanged)
+                    {
+                        RecargarGrilla();
+                    }
+
+                }
+            }
+        }
+
+        private void tsbEditar_Click(object sender, EventArgs e)
+        {
+            if (dgvDatos.SelectedCells.Count == 0)
+            {
+                MessageBox.Show("Debe seleccionar una fila de la grilla",
+                    "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            var filaSeleccionada = dgvDatos.SelectedRows[0];
+            if (filaSeleccionada.Tag is null) return;
+            var tipoListDto = (TipoBombonListDto)filaSeleccionada.Tag;
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                try
+                {
+                    var tipoBombonesServicio = scope.ServiceProvider
+                .GetRequiredService<ITipoBombonServicio>();
+                    var resultadoConsulta = tipoBombonesServicio
+                        .ObtenerParaEditar(tipoListDto.TipoBombonId);
+                    if (resultadoConsulta.IsFailure)
+                    {
+                        ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
+                        return;
+                    }
+                    var tipoEditDto = resultadoConsulta.Value;
+                    using (frmTipoDeBombonesAe frm = scope.ServiceProvider
+                        .GetRequiredService<frmTipoDeBombonesAe>())
+                    {
+                        frm.Text = "Editar Tipo de Bombón";
+                        frm.SetTipo(tipoEditDto);
+                        frm.ShowDialog();
+                        if (frm.DataChanged)
+                        {
+                            RecargarGrilla();
+                        }
+
+                    }
+
+                }
+                catch (Exception ex)
+                {
+
+                    MessageBox.Show(ex.Message,"Error",
+                        MessageBoxButtons.OK,MessageBoxIcon.Error);
                 }
             }
         }

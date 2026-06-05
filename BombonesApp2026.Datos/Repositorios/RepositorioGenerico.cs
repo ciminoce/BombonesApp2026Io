@@ -38,7 +38,7 @@ namespace BombonesApp2026.Datos.Repositorios
             _dbSet.Entry(entidadEnDb).CurrentValues.SetValues(entidad);
         }
 
-        public T? ObtenerPorId(int id)
+        public virtual T? ObtenerPorId(int id)
         {
             return _dbSet.Find(id);
         }

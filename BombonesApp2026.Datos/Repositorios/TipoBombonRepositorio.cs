@@ -1,5 +1,6 @@
 ﻿using BombonesApp2026.Datos.Interfaces;
 using BombonesApp2026.Entidades;
+using Microsoft.EntityFrameworkCore;
 
 namespace BombonesApp2026.Datos.Repositorios
 {
@@ -20,6 +21,11 @@ namespace BombonesApp2026.Datos.Repositorios
                 .Any(tb => tb.Nombre == tipoBombon.Nombre &&
                 tb.TipoBombonId != tipoBombon.TipoBombonId);
         }
-
+        public override TipoBombon? ObtenerPorId(int id)
+        {
+            return _context.TipoBombones
+                .AsNoTracking()
+                .FirstOrDefault(tp => tp.TipoBombonId == id);
+        }
     }
 }

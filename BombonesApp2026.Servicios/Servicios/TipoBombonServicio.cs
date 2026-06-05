@@ -6,6 +6,7 @@ using BombonesApp2026.Servicios.Intefaces;
 using BombonesApp2026.Servicios.Mapeadores;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace BombonesApp2026.Servicios.Servicios
 {
@@ -25,26 +26,26 @@ namespace BombonesApp2026.Servicios.Servicios
 
         public Result Agregar(TipoBombonCreateDto tipoBombonDto)
         {
-            var tipoBombon=TipoBombonMapper.ToEntidad(tipoBombonDto);
-            var result = _validator.Validate(tipoBombon);
-            if (!result.IsValid)
-            {
-                return Result.Failure(result.Errors.Select(e => e.ErrorMessage).ToList());
-            }
-            if (_unitOfWork.TipoBombones.Existe(tipoBombon))
-            {
-                return Result.Failure("Tipo de bombón existente!!!");
-            }
             try
             {
+                var tipoBombon=TipoBombonMapper.ToEntidad(tipoBombonDto);
+                var result = _validator.Validate(tipoBombon);
+                if (!result.IsValid)
+                {
+                    return Result.Failure(result.Errors.Select(e => e.ErrorMessage).ToList());
+                }
+                if (_unitOfWork.TipoBombones.Existe(tipoBombon))
+                {
+                    return Result.Failure($"Ya existe un tipo de bombón {tipoBombon.Nombre}");
+                }
                 _unitOfWork.TipoBombones.Agregar(tipoBombon);
                 _unitOfWork.Save();
                 return Result.Success();
             }
             catch (Exception ex)
             {
-
-                return Result.Failure(ex.Message);
+                _unitOfWork.RollBack();
+                return Result.Failure($"Error al intentar agregar un tipo de bombón: {ex.Message}");
             }
         }
 
@@ -57,7 +58,7 @@ namespace BombonesApp2026.Servicios.Servicios
                 _unitOfWork.Save();
                 return Result.Success();
             }
-            catch(DbUpdateConcurrencyException ex)
+            catch(DbUpdateConcurrencyException )
             {
                 _unitOfWork.RollBack();
                 return Result.ConcurrencyFailure("Otro usuario modificó el registro\nLa grilla se recargará automáticamente");
@@ -130,33 +131,51 @@ namespace BombonesApp2026.Servicios.Servicios
 
         public Result Editar(TipoBombonUpdateDto tipoBombonDto)
         {
-            var tipoBombonToValidate = TipoBombonMapper.ToEntidad(tipoBombonDto);
-            var result = _validator.Validate(tipoBombonToValidate);
-            if(!result.IsValid)
-            {
-                return Result.Failure(result.Errors.Select(e => e.ErrorMessage).ToList());
-            }
-            var tipoBombon = _unitOfWork.TipoBombones.ObtenerPorId(tipoBombonDto.TipoBombonId);
-            if (tipoBombon == null)
-            {
-                return Result.Failure("Tipo de bombón no encontrado!!!");
-            }
-            // Actualizar las propiedades del tipo de bombón
-            tipoBombon.Nombre = tipoBombonDto.Nombre;
-            tipoBombon.Activo = tipoBombonDto.Activo;
-            tipoBombon.RowVersion = tipoBombonDto.RowVersion;
-            if(_unitOfWork.TipoBombones.Existe(tipoBombon))
-            {
-                return Result.Failure("Tipo de bombón existente!!!");
-            }
             try
             {
+                var tipoBombon = TipoBombonMapper.ToEntidad(tipoBombonDto);
+                var result = _validator.Validate(tipoBombon);
+                if(!result.IsValid)
+                {
+                    return Result.Failure(result.Errors.Select(e => e.ErrorMessage).ToList());
+                }
+                //var tipoBombon = _unitOfWork.TipoBombones.ObtenerPorId(tipoBombonDto.TipoBombonId);
+                //if (tipoBombon == null)
+                //{
+                //    return Result.Failure("Tipo de bombón no encontrado!!!");
+                //}
+                //TipoBombon tipoBombon = TipoBombonMapper.ToEntidad(tipoBombonDto);
+                //// Actualizar las propiedades del tipo de bombón
+                //tipoBombon.Nombre = tipoBombonDto.Nombre;
+                //tipoBombon.Descripcion = tipoBombon.Descripcion;
+                //tipoBombon.Activo = tipoBombonDto.Activo;
+                //tipoBombon.RowVersion = tipoBombonDto.RowVersion;
+                if (_unitOfWork.TipoBombones.Existe(tipoBombon))
+                {
+                    return Result.Failure($"Ya existe un tipo de bombón {tipoBombon.Nombre}");
+                }
+                _unitOfWork.TipoBombones.Editar(tipoBombon, tipoBombon.TipoBombonId,
+                    tipoBombonDto.RowVersion);
                 _unitOfWork.Save();
                 return Result.Success();
             }
+            catch (DBConcurrencyException)
+            {
+                _unitOfWork.RollBack();
+                return Result.ConcurrencyFailure("Otro usuario modificó el registro\nLa grilla se recargará automáticamente");
+
+            }
+            catch (KeyNotFoundException)
+            {
+                _unitOfWork.RollBack();
+                return Result.Failure(@$"Tipo de bombon con ID: {tipoBombonDto.TipoBombonId}
+                        no econtrado");
+            }
+
             catch (Exception ex)
             {
-                return Result.Failure(ex.Message);
+                _unitOfWork.RollBack();
+                return Result.Failure($"Error al intentar editar un tipo de bombón: {ex.Message}");
             }
         }
 

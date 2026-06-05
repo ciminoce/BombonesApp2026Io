@@ -80,6 +80,7 @@
             tsbNuevo.Size = new Size(52, 67);
             tsbNuevo.Text = "&Nuevo";
             tsbNuevo.TextImageRelation = TextImageRelation.ImageAboveText;
+            tsbNuevo.Click += tsbNuevo_Click;
             // 
             // tsbBorrar
             // 
@@ -101,6 +102,7 @@
             tsbEditar.Size = new Size(52, 67);
             tsbEditar.Text = "&Editar";
             tsbEditar.TextImageRelation = TextImageRelation.ImageAboveText;
+            tsbEditar.Click += tsbEditar_Click;
             // 
             // toolStripSeparator1
             // 
