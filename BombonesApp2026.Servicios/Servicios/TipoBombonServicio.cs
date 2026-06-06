@@ -129,56 +129,60 @@ namespace BombonesApp2026.Servicios.Servicios
             }
         }
 
-        public Result Editar(TipoBombonUpdateDto tipoBombonDto)
+        public Result Editar(TipoBombonUpdateDto dto)
         {
             try
             {
-                var tipoBombon = TipoBombonMapper.ToEntidad(tipoBombonDto);
-                var result = _validator.Validate(tipoBombon);
-                if(!result.IsValid)
+                var entidad = TipoBombonMapper.ToEntidad(dto);
+
+                var validationResult = _validator.Validate(entidad);
+
+                if (!validationResult.IsValid)
                 {
-                    return Result.Failure(result.Errors.Select(e => e.ErrorMessage).ToList());
+                    return Result.Failure(validationResult.Errors.Select(e => e.ErrorMessage)
+                            .ToList());
                 }
-                //var tipoBombon = _unitOfWork.TipoBombones.ObtenerPorId(tipoBombonDto.TipoBombonId);
-                //if (tipoBombon == null)
+
+                //if (_unitOfWork.TipoBombones.ObtenerPorId(dto.TipoBombonId) is null)
                 //{
-                //    return Result.Failure("Tipo de bombón no encontrado!!!");
+                //    return Result.Failure(
+                //        "Tipo de bombón no encontrado");
                 //}
-                //TipoBombon tipoBombon = TipoBombonMapper.ToEntidad(tipoBombonDto);
-                //// Actualizar las propiedades del tipo de bombón
-                //tipoBombon.Nombre = tipoBombonDto.Nombre;
-                //tipoBombon.Descripcion = tipoBombon.Descripcion;
-                //tipoBombon.Activo = tipoBombonDto.Activo;
-                //tipoBombon.RowVersion = tipoBombonDto.RowVersion;
-                if (_unitOfWork.TipoBombones.Existe(tipoBombon))
+
+                if (_unitOfWork.TipoBombones.Existe(entidad))
                 {
-                    return Result.Failure($"Ya existe un tipo de bombón {tipoBombon.Nombre}");
+                    return Result.Failure(
+                        $" Ya existe un tipo de bombón con el nombre {entidad.Nombre}");
                 }
-                _unitOfWork.TipoBombones.Editar(tipoBombon, tipoBombon.TipoBombonId,
-                    tipoBombonDto.RowVersion);
+
+                _unitOfWork.TipoBombones.Editar(entidad, entidad.TipoBombonId, dto.RowVersion);
+
                 _unitOfWork.Save();
+
                 return Result.Success();
             }
-            catch (DBConcurrencyException)
+            catch (DbUpdateConcurrencyException)//acá decía DBConcurrencyException!!!
             {
                 _unitOfWork.RollBack();
-                return Result.ConcurrencyFailure("Otro usuario modificó el registro\nLa grilla se recargará automáticamente");
 
+                return Result.ConcurrencyFailure(
+                    "Otro usuario modificó el registro.\nLa grilla se recargará automáticamente");
             }
             catch (KeyNotFoundException)
             {
                 _unitOfWork.RollBack();
-                return Result.Failure(@$"Tipo de bombon con ID: {tipoBombonDto.TipoBombonId}
-                        no econtrado");
-            }
 
+                return Result.Failure(
+                    $"Tipo de bombón con ID {dto.TipoBombonId} no encontrado");
+            }
             catch (Exception ex)
             {
                 _unitOfWork.RollBack();
-                return Result.Failure($"Error al intentar editar un tipo de bombón: {ex.Message}");
+
+                return Result.Failure(
+                    $"Error al intentar editar el tipo de bombón: {ex.Message}");
             }
         }
-
         public Result<List<TipoBombonListDto>> FiltrarPorActivo(bool activo)
         {
             try

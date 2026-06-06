@@ -16,6 +16,7 @@ namespace BombonesApp2026.Windows
         }
 
         public bool DataChanged { get; private set; }
+        public bool ConcurrencyConflict { get; private set; }//Agregado para informar de conflicto de concurrencia
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -81,6 +82,16 @@ namespace BombonesApp2026.Windows
 
                         var resultadoEditar=_tipoBombonServicio
                             .Editar(_tipoUpdateDto);
+                        if (resultadoEditar.IsConcurrencyConflict)
+                        {
+                            ErrorHelper.MostrarErrores(resultadoEditar.Errors);
+
+                            ConcurrencyConflict = true;
+                            DialogResult = DialogResult.Cancel;
+
+                            Close();
+                            return;
+                        }
                         if (resultadoEditar.IsFailure)
                         {
                             ErrorHelper.MostrarErrores(resultadoEditar.Errors);

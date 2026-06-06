@@ -28,15 +28,19 @@ namespace BombonesApp2026.Datos.Repositorios
 
         public void Editar(T entidad, int id, byte[] rowVersion)
         {
-            var entidadEnDb = ObtenerPorId(id);
+            var entidadEnDb = _dbSet.Find(id);
+
             if (entidadEnDb is null)
             {
-                throw new KeyNotFoundException($"No se pudo borrar la entidad ID: {id} de la tabla {typeof(T).Name}");
+                throw new KeyNotFoundException(
+                    $"No se encontró la entidad ID:{id}");
             }
 
-            var entidadE = _context.Entry(entidadEnDb);
-            entidadE.OriginalValues["RowVersion"] = rowVersion;
-            entidadE.CurrentValues.SetValues(entidad);
+            var entry = _context.Entry(entidadEnDb);
+
+            entry.OriginalValues["RowVersion"] = rowVersion;
+
+            entry.CurrentValues.SetValues(entidad);
         }
     }
 }

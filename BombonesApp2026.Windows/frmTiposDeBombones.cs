@@ -245,7 +245,11 @@ namespace BombonesApp2026.Windows
                         frm.Text = "Editar Tipo de Bombón";
                         frm.SetTipo(tipoEditDto);
                         frm.ShowDialog();
-                        if (frm.DataChanged)
+                        if (frm.ConcurrencyConflict)//si hubo concurrencia se recarga la grilla
+                        {
+                            RecargarGrilla();
+                        }
+                        if (frm.DataChanged)//si cambiaron los datos se recarga la grilla
                         {
                             RecargarGrilla();
                         }
