@@ -37,8 +37,7 @@ namespace BombonesApp2026.Windows
                     var resultadoConsulta = tipoBombonesServicio.ObtenerTodos();
                     if (resultadoConsulta.IsFailure)
                     {
-                        string errores = string.Join("\n", resultadoConsulta.Errors);
-                        MessageBox.Show(errores, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
                         return;
                     }
                     _listaTipoBombones = resultadoConsulta.Value;
@@ -77,8 +76,7 @@ namespace BombonesApp2026.Windows
                     var resultadoConsulta = tipoBombonesServicio.FiltrarPorActivo(true);
                     if (resultadoConsulta.IsFailure)
                     {
-                        string errores = string.Join("\n", resultadoConsulta.Errors);
-                        MessageBox.Show(errores, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
                         return;
                     }
                     _listaTipoBombones = resultadoConsulta.Value;
@@ -115,8 +113,7 @@ namespace BombonesApp2026.Windows
                     var resultadoConsulta = tipoBombonesServicio.FiltrarPorActivo(false);
                     if (resultadoConsulta.IsFailure)
                     {
-                        string errores = string.Join("\n", resultadoConsulta.Errors);
-                        MessageBox.Show(errores, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
                         return;
                     }
                     _listaTipoBombones = resultadoConsulta.Value;
