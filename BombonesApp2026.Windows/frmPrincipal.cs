@@ -30,11 +30,21 @@ namespace BombonesApp2026.Windows
 
         private void btnTiposBombones_Click(object sender, EventArgs e)
         {
-            using (var frm=_serviceProvider.GetRequiredService<frmTiposDeBombones>())
+            using (var frm = _serviceProvider.GetRequiredService<frmTiposDeBombones>())
             {
                 frm.Text = "Lista de Tipos de Bombones";
                 frm.ShowDialog();
             }
+        }
+
+        private void btnFormasDePago_Click(object sender, EventArgs e)
+        {
+            using (var frm = _serviceProvider.GetRequiredService<frmFormasDePago>())
+            {
+                frm.Text = "Lista de Formas de Pago";
+                frm.ShowDialog();
+            }
+
         }
     }
 }

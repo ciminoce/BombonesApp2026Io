@@ -11,6 +11,5 @@ namespace BombonesApp2026.Servicios.Intefaces
         Result Agregar(FormaDePagoCreateDto formaDePagoDto);
         Result Editar(FormaDePagoUpdateDto formaDePagoDto   );
         Result Borrar(int id);
-
     }
 }

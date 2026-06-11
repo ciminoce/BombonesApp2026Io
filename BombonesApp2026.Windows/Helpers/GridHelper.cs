@@ -1,4 +1,5 @@
-﻿using BombonesApp2026.Servicios.DTOs.TipoBombon;
+﻿using BombonesApp2026.Servicios.DTOs.FormaDePago;
+using BombonesApp2026.Servicios.DTOs.TipoBombon;
 
 namespace BombonesApp2026.Windows.Helpers
 {
@@ -34,6 +35,12 @@ namespace BombonesApp2026.Windows.Helpers
                     r.Cells[2].Value = tipoDto.Descripcion;
                     r.Cells[3].Value = tipoDto.Activo;
                     break;
+                case FormaDePagoListDto formaDto:
+                    r.Cells[0].Value = formaDto.FormaDePagoId;
+                    r.Cells[1].Value = formaDto.Nombre;
+                    r.Cells[2].Value = formaDto.Activo;
+                    break;
+
             }
 
             r.Tag = obj;

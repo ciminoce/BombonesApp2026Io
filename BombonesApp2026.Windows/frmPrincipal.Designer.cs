@@ -164,6 +164,7 @@
             btnFormasDePago.TabIndex = 0;
             btnFormasDePago.Text = "Formas de Pago";
             btnFormasDePago.UseVisualStyleBackColor = true;
+            btnFormasDePago.Click += btnFormasDePago_Click;
             // 
             // btnCajas
             // 

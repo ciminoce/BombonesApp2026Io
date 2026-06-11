@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BombonesApp2026.Servicios.DTOs.FormaDePago;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,6 +14,13 @@ namespace BombonesApp2026.Windows
         public frmFormaDePagoAe()
         {
             InitializeComponent();
+        }
+
+        public bool DataChanged { get; internal set; }
+
+        internal void SetTipo(FormaDePagoUpdateDto? formaEditDto)
+        {
+            throw new NotImplementedException();
         }
     }
 }
