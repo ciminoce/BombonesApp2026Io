@@ -2,6 +2,7 @@
 using BombonesApp2026.Entidades;
 using BombonesApp2026.Servicios.Common;
 using BombonesApp2026.Servicios.DTOs.FormaDePago;
+using BombonesApp2026.Servicios.DTOs.TipoBombon;
 using BombonesApp2026.Servicios.Intefaces;
 using BombonesApp2026.Servicios.Mapeadores;
 using FluentValidation;
@@ -151,6 +152,22 @@ namespace BombonesApp2026.Servicios.Servicios
             {
 
                 return Result.Failure(ex.Message);
+            }
+        }
+
+        public Result<List<FormaDePagoListDto>> FiltrarPorActivo(bool activo)
+        {
+            try
+            {
+                var query = _unitOfWork.FormasDePago.Query();
+                var lista = query.Where(tb => tb.Activo == activo);
+                var listaDto = lista.Select(tb => FormaDePagoMapper.ToListDto(tb)).ToList();
+                return Result<List<FormaDePagoListDto>>.Success(listaDto);
+            }
+            catch (Exception ex)
+            {
+
+                return Result<List<FormaDePagoListDto>>.Failure($"Error al intentar filtrar las formas de pago: {ex.Message}");
             }
         }
     }

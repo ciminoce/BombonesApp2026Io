@@ -172,5 +172,75 @@ namespace BombonesApp2026.Windows
         {
             RecargarGrilla();
         }
+
+        private void activosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var formaDePagoServicio = scope.ServiceProvider
+                    .GetRequiredService<IFormaDePagoServicio>();
+                try
+                {
+                    var resultadoConsulta = formaDePagoServicio.FiltrarPorActivo(true);
+                    if (resultadoConsulta.IsFailure)
+                    {
+                        ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
+                        return;
+                    }
+                    _listaFormas = resultadoConsulta.Value;
+                    MostrarDatosEnGrilla(_listaFormas);
+                    ManejarControles(true);
+                }
+                catch (Exception ex)
+                {
+
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+        }
+
+        private void ManejarControles(bool v)
+        {
+            filtroActivo = v;
+            tsbFiltrar.BackColor = filtroActivo ? Color.Orange : SystemColors.Control;
+
+            tsbNuevo.Enabled = !v;
+            tsbEditar.Enabled = !v;
+            tsbBorrar.Enabled = !v;
+        }
+
+        private void noActivosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var formaDePagoServicio = scope.ServiceProvider
+                    .GetRequiredService<IFormaDePagoServicio>();
+                try
+                {
+                    var resultadoConsulta = formaDePagoServicio.FiltrarPorActivo(false);
+                    if (resultadoConsulta.IsFailure)
+                    {
+                        ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
+                        return;
+                    }
+                    _listaFormas = resultadoConsulta.Value;
+                    MostrarDatosEnGrilla(_listaFormas);
+                    ManejarControles(true);
+                }
+                catch (Exception ex)
+                {
+
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+        }
+
+        private void tsbActualizar_Click(object sender, EventArgs e)
+        {
+            RecargarGrilla();
+            ManejarControles(false);
+        }
     }
 }

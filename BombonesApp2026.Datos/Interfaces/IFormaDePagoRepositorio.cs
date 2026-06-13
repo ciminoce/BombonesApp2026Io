@@ -6,6 +6,5 @@ namespace BombonesApp2026.Datos.Interfaces
     {
         bool Existe(FormaDePago formaDePago);
         bool EstaRelacionado(FormaDePago formaDePago);
-
     }
 }

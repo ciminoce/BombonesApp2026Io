@@ -122,14 +122,16 @@
             // activosToolStripMenuItem
             // 
             activosToolStripMenuItem.Name = "activosToolStripMenuItem";
-            activosToolStripMenuItem.Size = new Size(132, 22);
+            activosToolStripMenuItem.Size = new Size(180, 22);
             activosToolStripMenuItem.Text = "Activos";
+            activosToolStripMenuItem.Click += activosToolStripMenuItem_Click;
             // 
             // noActivosToolStripMenuItem
             // 
             noActivosToolStripMenuItem.Name = "noActivosToolStripMenuItem";
-            noActivosToolStripMenuItem.Size = new Size(132, 22);
+            noActivosToolStripMenuItem.Size = new Size(180, 22);
             noActivosToolStripMenuItem.Text = "No Activos";
+            noActivosToolStripMenuItem.Click += noActivosToolStripMenuItem_Click;
             // 
             // tsbActualizar
             // 
@@ -140,6 +142,7 @@
             tsbActualizar.Size = new Size(63, 67);
             tsbActualizar.Text = "&Actualizar";
             tsbActualizar.TextImageRelation = TextImageRelation.ImageAboveText;
+            tsbActualizar.Click += tsbActualizar_Click;
             // 
             // toolStripSeparator2
             // 

@@ -19,6 +19,7 @@ namespace BombonesApp2026.Servicios.Mapeadores
             return new FormaDePago
             {
                 Nombre = formaDePagoDto.Nombre,
+                Activo=formaDePagoDto.Activo
             };
         }
         public static FormaDePago ToEntidad(FormaDePagoUpdateDto formaDePagoDto)
