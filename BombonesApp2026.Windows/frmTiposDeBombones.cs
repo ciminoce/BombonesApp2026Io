@@ -19,6 +19,10 @@ namespace BombonesApp2026.Windows
         private int _totalRegistros = 0;
         private int _totalPaginas = 0;
         private int _cantidadPorPagina = 10;
+
+        //para ordenar
+        private string campoOrdenar = "Nombre";
+        private bool esAscendente = true;
         public frmTiposDeBombones(IServiceProvider provider)
         {
             InitializeComponent();
@@ -44,7 +48,8 @@ namespace BombonesApp2026.Windows
                 try
                 {
                     var resultadoConsulta = tipoBombonesServicio
-                        .ObtenerPagina(_paginaActual, _cantidadPorPagina);
+                        .ObtenerPagina(_paginaActual, _cantidadPorPagina,
+                        campoOrdenar, esAscendente);
                     if (resultadoConsulta.IsFailure)
                     {
                         ErrorHelper.MostrarErrores(resultadoConsulta.Errors);

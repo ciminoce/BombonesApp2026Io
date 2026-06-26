@@ -40,11 +40,12 @@ namespace BombonesApp2026.Datos.Repositorios
         }
 
         public (List<T> lista, int totalRegistros) ObtenerPagina(int pagina, 
-            int cantidad)
+            int cantidad, Func<IQueryable<T>,IOrderedQueryable<T>> ordenarPor)
         {
-            //TODO: OJO que falta el criterio de ordenamiento
-            var cantidadRegistros = _dbSet.Count();
-            var listaPaginada = _dbSet.AsNoTracking()
+            
+            var query = Query();//_dbSet.AsQueryable();
+            var cantidadRegistros = query.Count();
+            var listaPaginada = ordenarPor(query)
                 .Skip((pagina - 1) * cantidad)
                 .Take(cantidad)
                 .ToList();

@@ -213,12 +213,29 @@ namespace BombonesApp2026.Servicios.Servicios
             }
         }
 
-        public Result<ResultadoPaginacionDto<TipoBombonListDto>> ObtenerPagina(int pagina, int cantidad)
+        public Result<ResultadoPaginacionDto<TipoBombonListDto>> ObtenerPagina(int pagina, int cantidad,
+            string campoOrden, bool esAscendente)
         {
             try
             {
+                Func<IQueryable<TipoBombon>, IOrderedQueryable<TipoBombon>>? ordenarPor = null;
+                switch (campoOrden)
+                {
+                    case "TipoBombonId":
+                        ordenarPor = q => esAscendente ?
+                            q.OrderBy(tb => tb.TipoBombonId) :
+                            q.OrderByDescending(tb => tb.TipoBombonId);
+                        break;
+                    case "Nombre":
+                    default:
+                        ordenarPor = q => esAscendente ?
+                            q.OrderBy(tb => tb.Nombre) :
+                            q.OrderByDescending(tb => tb.Nombre);
+
+                        break;
+                }
                 var resultado = _unitOfWork.TipoBombones
-                    .ObtenerPagina(pagina, cantidad);
+                    .ObtenerPagina(pagina, cantidad,ordenarPor);
                 var listaDto = resultado.lista
                     .Select(tb => TipoBombonMapper.ToListDto(tb))
                     .ToList();
@@ -240,5 +257,6 @@ namespace BombonesApp2026.Servicios.Servicios
                     .Failure($"Error al intentar paginar: {ex.Message}");
             }
         }
+
     }
 }

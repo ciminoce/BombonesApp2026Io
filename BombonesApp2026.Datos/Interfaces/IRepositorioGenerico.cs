@@ -8,6 +8,8 @@
         void Agregar(T entidad);
         void Editar(T entidad, int id);
         void Borrar(int id);
-        (List<T> lista, int totalRegistros) ObtenerPagina(int pagina, int cantidad);
+        (List<T> lista, int totalRegistros) ObtenerPagina(int pagina,
+            int cantidad,
+            Func<IQueryable<T>, IOrderedQueryable<T>> ordenarPor);
     }
 }
