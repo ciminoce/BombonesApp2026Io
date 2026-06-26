@@ -6,5 +6,6 @@ namespace BombonesApp2026.Datos.Interfaces
     {
         bool Existe(TipoBombon tipoBombon);
         bool EstaRelacionado(TipoBombon tipoBombon);
+        int ObtenerPosicionRegistro(int seleccionadoId);
     }
 }

@@ -16,6 +16,6 @@ namespace BombonesApp2026.Servicios.Intefaces
         Result<List<TipoBombonListDto>> FiltrarPorActivo(bool activo);
         Result<ResultadoPaginacionDto<TipoBombonListDto>> ObtenerPagina(int pagina,
             int cantidad, string campoOrdenar, bool esAscendente);
-
+        Result<int> ObtenerPaginaRegistro(int seleccionadoId, int cantidadPorPagina);
     }
 }

@@ -166,16 +166,14 @@ namespace BombonesApp2026.Windows
 
         private void tsbBorrar_Click(object sender, EventArgs e)
         {
-            if (dgvDatos.SelectedRows.Count == 0)
+            if (_bindingSource.Current==null)
             {
                 MessageBox.Show("Debe seleccionar una fila",
                     "Advertencia",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            var filaSeleccionada = dgvDatos.SelectedRows[0];
-            if (filaSeleccionada.Tag is null) return;
-            TipoBombonListDto tipoListDto = (TipoBombonListDto)filaSeleccionada.Tag;
+            TipoBombonListDto tipoListDto = (TipoBombonListDto)_bindingSource.Current;
             using (var scope = _serviceProvider.CreateScope())
             {
                 var tipoBombonServicio = scope.ServiceProvider
@@ -212,6 +210,10 @@ namespace BombonesApp2026.Windows
                     MessageBox.Show("Registro eliminado satisfactoriamente",
                         "Mensaje",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if(dgvDatos.Rows.Count==1 && _paginaActual > 1)
+                    {
+                        _paginaActual--;
+                    }
                     RecargarGrilla();
                 }
                 catch (Exception ex)
@@ -241,15 +243,14 @@ namespace BombonesApp2026.Windows
 
         private void tsbEditar_Click(object sender, EventArgs e)
         {
-            if (dgvDatos.SelectedCells.Count == 0)
+            if (_bindingSource.Current==null)
             {
                 MessageBox.Show("Debe seleccionar una fila de la grilla",
                     "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            var filaSeleccionada = dgvDatos.SelectedRows[0];
-            if (filaSeleccionada.Tag is null) return;
-            var tipoListDto = (TipoBombonListDto)filaSeleccionada.Tag;
+            var tipoListDto = (TipoBombonListDto)_bindingSource.Current;
+            var seleccionadoId = tipoListDto.TipoBombonId;
             using (var scope = _serviceProvider.CreateScope())
             {
                 try
@@ -270,6 +271,15 @@ namespace BombonesApp2026.Windows
                         frm.Text = "Editar Tipo de Bombón";
                         frm.SetTipo(tipoEditDto);
                         frm.ShowDialog();
+                        var resultadoPagina = tipoBombonesServicio
+                            .ObtenerPaginaRegistro(seleccionadoId, _cantidadPorPagina);
+                        if (resultadoConsulta.IsFailure)
+                        {
+                            ErrorHelper.MostrarErrores(resultadoPagina.Errors);
+                            return;
+                        }
+                        _paginaActual = resultadoPagina.Value;
+
                         if (frm.ConcurrencyConflict)//si hubo concurrencia se recarga la grilla
                         {
                             RecargarGrilla();
@@ -278,7 +288,11 @@ namespace BombonesApp2026.Windows
                         {
                             RecargarGrilla();
                         }
-
+                        var registroEditado = _bindingSource.List
+                            .Cast<TipoBombonListDto>()
+                            .FirstOrDefault(tb => tb.TipoBombonId == seleccionadoId);
+                        if (registroEditado is null) return;
+                        _bindingSource.Position = _bindingSource.IndexOf(registroEditado);
                     }
 
                 }

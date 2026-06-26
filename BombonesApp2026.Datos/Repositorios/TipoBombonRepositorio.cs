@@ -27,5 +27,13 @@ namespace BombonesApp2026.Datos.Repositorios
                 .AsNoTracking()
                 .FirstOrDefault(tp => tp.TipoBombonId == id);
         }
+
+        public int ObtenerPosicionRegistro(int seleccionadoId)
+        {
+            var tipoEnDb = ObtenerPorId(seleccionadoId);
+            if (tipoEnDb is null) return 0;
+            return _context.TipoBombones
+                .Count(tb => string.Compare(tb.Nombre, tipoEnDb.Nombre) <= 0);
+        }
     }
 }

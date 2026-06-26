@@ -258,5 +258,20 @@ namespace BombonesApp2026.Servicios.Servicios
             }
         }
 
+        public Result<int> ObtenerPaginaRegistro(int seleccionadoId, int cantidadPorPagina)
+        {
+            try
+            {
+                var posicion = _unitOfWork.TipoBombones.ObtenerPosicionRegistro(seleccionadoId);
+                var pagina = (int)Math.Ceiling((double)posicion / cantidadPorPagina);
+                return Result<int> .Success(pagina);
+            }
+            catch (Exception ex)
+            {
+
+                return Result<int>
+                    .Failure($"Error al intentar obtener la pagina: {ex.Message}");
+            }
+        }
     }
 }
