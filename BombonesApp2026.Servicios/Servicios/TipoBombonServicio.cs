@@ -213,5 +213,32 @@ namespace BombonesApp2026.Servicios.Servicios
             }
         }
 
+        public Result<ResultadoPaginacionDto<TipoBombonListDto>> ObtenerPagina(int pagina, int cantidad)
+        {
+            try
+            {
+                var resultado = _unitOfWork.TipoBombones
+                    .ObtenerPagina(pagina, cantidad);
+                var listaDto = resultado.lista
+                    .Select(tb => TipoBombonMapper.ToListDto(tb))
+                    .ToList();
+                var resultadoPaginado = new
+                    ResultadoPaginacionDto<TipoBombonListDto>()
+                {
+                    Items = listaDto,
+                    CantidadRegistros = resultado.totalRegistros,
+                    CantidadPorPagina=cantidad,
+                    PaginaActual= pagina
+                };
+                return Result<ResultadoPaginacionDto<TipoBombonListDto>>
+                    .Success(resultadoPaginado);
+            }
+            catch (Exception ex)
+            {
+
+                return Result<ResultadoPaginacionDto<TipoBombonListDto>>
+                    .Failure($"Error al intentar paginar: {ex.Message}");
+            }
+        }
     }
 }

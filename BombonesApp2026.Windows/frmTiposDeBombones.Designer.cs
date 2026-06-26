@@ -205,6 +205,7 @@
             // 
             // colId
             // 
+            colId.DataPropertyName = "TipoBombonId";
             colId.HeaderText = "Id";
             colId.Name = "colId";
             colId.ReadOnly = true;
@@ -213,6 +214,7 @@
             // colNombre
             // 
             colNombre.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            colNombre.DataPropertyName = "Nombre";
             colNombre.HeaderText = "Tipo de Bombón";
             colNombre.Name = "colNombre";
             colNombre.ReadOnly = true;
@@ -220,12 +222,14 @@
             // colDescripcion
             // 
             colDescripcion.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            colDescripcion.DataPropertyName = "Descripcion";
             colDescripcion.HeaderText = "Descripción";
             colDescripcion.Name = "colDescripcion";
             colDescripcion.ReadOnly = true;
             // 
             // colActivo
             // 
+            colActivo.DataPropertyName = "Activo";
             colActivo.HeaderText = "Activo";
             colActivo.Name = "colActivo";
             colActivo.ReadOnly = true;
@@ -238,6 +242,7 @@
             btnUltimo.Size = new Size(41, 38);
             btnUltimo.TabIndex = 2;
             btnUltimo.UseVisualStyleBackColor = true;
+            btnUltimo.Click += btnUltimo_Click;
             // 
             // btnSiguiente
             // 
@@ -247,6 +252,7 @@
             btnSiguiente.Size = new Size(41, 38);
             btnSiguiente.TabIndex = 2;
             btnSiguiente.UseVisualStyleBackColor = true;
+            btnSiguiente.Click += btnSiguiente_Click;
             // 
             // btnAnterior
             // 
@@ -256,6 +262,7 @@
             btnAnterior.Size = new Size(41, 38);
             btnAnterior.TabIndex = 2;
             btnAnterior.UseVisualStyleBackColor = true;
+            btnAnterior.Click += btnAnterior_Click;
             // 
             // btnPrimero
             // 
@@ -265,6 +272,7 @@
             btnPrimero.Size = new Size(41, 38);
             btnPrimero.TabIndex = 2;
             btnPrimero.UseVisualStyleBackColor = true;
+            btnPrimero.Click += btnPrimero_Click;
             // 
             // lblPaginas
             // 
@@ -344,15 +352,15 @@
         private ToolStripDropDownButton tsbFiltrar;
         private ToolStripMenuItem activosToolStripMenuItem;
         private ToolStripMenuItem noActivosToolStripMenuItem;
-        private DataGridViewTextBoxColumn colId;
-        private DataGridViewTextBoxColumn colNombre;
-        private DataGridViewTextBoxColumn colDescripcion;
-        private DataGridViewCheckBoxColumn colActivo;
         private Button btnUltimo;
         private Button btnSiguiente;
         private Button btnAnterior;
         private Button btnPrimero;
         private Label lblPaginas;
         private Label label2;
+        private DataGridViewTextBoxColumn colId;
+        private DataGridViewTextBoxColumn colNombre;
+        private DataGridViewTextBoxColumn colDescripcion;
+        private DataGridViewCheckBoxColumn colActivo;
     }
 }

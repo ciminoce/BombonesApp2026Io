@@ -1,4 +1,5 @@
-﻿using BombonesApp2026.Servicios.DTOs.TipoBombon;
+﻿using BombonesApp2026.Servicios.Common;
+using BombonesApp2026.Servicios.DTOs.TipoBombon;
 using BombonesApp2026.Servicios.Intefaces;
 using BombonesApp2026.Windows.Helpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,14 @@ namespace BombonesApp2026.Windows
         private readonly IServiceProvider _serviceProvider;
         private List<TipoBombonListDto>? _listaTipoBombones;
         private bool filtroActivo = false;
+
+        private BindingSource _bindingSource = new BindingSource();
+
+        //para paginar
+        private int _paginaActual = 1;
+        private int _totalRegistros = 0;
+        private int _totalPaginas = 0;
+        private int _cantidadPorPagina = 10;
         public frmTiposDeBombones(IServiceProvider provider)
         {
             InitializeComponent();
@@ -34,14 +43,15 @@ namespace BombonesApp2026.Windows
                     .GetRequiredService<ITipoBombonServicio>();
                 try
                 {
-                    var resultadoConsulta = tipoBombonesServicio.ObtenerTodos();
+                    var resultadoConsulta = tipoBombonesServicio
+                        .ObtenerPagina(_paginaActual, _cantidadPorPagina);
                     if (resultadoConsulta.IsFailure)
                     {
                         ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
                         return;
                     }
-                    _listaTipoBombones = resultadoConsulta.Value;
-                    MostrarDatosEnGrilla(_listaTipoBombones);
+
+                    MostrarDatosEnGrilla(resultadoConsulta.Value!);
                 }
                 catch (Exception ex)
                 {
@@ -51,18 +61,31 @@ namespace BombonesApp2026.Windows
             }
         }
 
-        private void MostrarDatosEnGrilla(List<TipoBombonListDto>? listaTipoBombones)
+        private void MostrarDatosEnGrilla(ResultadoPaginacionDto<TipoBombonListDto> resultado)
         {
-            GridHelper.LimpiarGrilla(dgvDatos);
-            if (listaTipoBombones is null ||
-                listaTipoBombones.Count == 0) return;
-            foreach (var item in listaTipoBombones)
+            if (resultado.Items is null ||
+                resultado.Items.Count == 0) return;
+
+            _totalPaginas = resultado.TotalPaginas;
+            _totalRegistros = resultado.CantidadRegistros;
+
+            _bindingSource.DataSource = resultado.Items;
+            dgvDatos.DataSource = _bindingSource;
+
+            int desde = 1 + (_paginaActual - 1) * _cantidadPorPagina;
+            int hasta = desde + _cantidadPorPagina;
+            if (hasta > _totalRegistros)
             {
-                var r = GridHelper.ConstruirFila(dgvDatos);
-                GridHelper.SetearFila(r, item);
-                GridHelper.AgregarFila(r, dgvDatos);
+                hasta = _totalRegistros;
             }
-            lblCantidad.Text = listaTipoBombones.Count.ToString();
+            lblCantidad.Text=$"Del {desde} a {hasta} de {_totalRegistros}";
+            lblPaginas.Text = $"{_paginaActual} de {_totalPaginas}";
+
+            btnPrimero.Enabled = resultado.TieneRegistrosAnteriores;
+            btnAnterior.Enabled = resultado.TieneRegistrosAnteriores;
+            btnSiguiente.Enabled = resultado.TieneRegistrosSiguientes;
+            btnUltimo.Enabled = resultado.TieneRegistrosSiguientes;
+
         }
 
         private void activosToolStripMenuItem_Click(object sender, EventArgs e)
@@ -80,7 +103,7 @@ namespace BombonesApp2026.Windows
                         return;
                     }
                     _listaTipoBombones = resultadoConsulta.Value;
-                    MostrarDatosEnGrilla(_listaTipoBombones);
+                    //MostrarDatosEnGrilla(_listaTipoBombones);
                     ManejarControles(true);
                 }
                 catch (Exception ex)
@@ -117,7 +140,7 @@ namespace BombonesApp2026.Windows
                         return;
                     }
                     _listaTipoBombones = resultadoConsulta.Value;
-                    MostrarDatosEnGrilla(_listaTipoBombones);
+                    //MostrarDatosEnGrilla(_listaTipoBombones);
                     ManejarControles(true);
                 }
                 catch (Exception ex)
@@ -257,10 +280,42 @@ namespace BombonesApp2026.Windows
                 catch (Exception ex)
                 {
 
-                    MessageBox.Show(ex.Message,"Error",
-                        MessageBoxButtons.OK,MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        private void btnPrimero_Click(object sender, EventArgs e)
+        {
+            _paginaActual = 1;
+            RecargarGrilla();
+        }
+
+        private void btnAnterior_Click(object sender, EventArgs e)
+        {
+            _paginaActual--;
+            if (_paginaActual == 0)
+            {
+                _paginaActual = 1;
+            }
+            RecargarGrilla();
+        }
+
+        private void btnSiguiente_Click(object sender, EventArgs e)
+        {
+            _paginaActual++;
+            if (_paginaActual > _totalPaginas)
+            {
+                _paginaActual = _totalPaginas;
+            }
+            RecargarGrilla();
+        }
+
+        private void btnUltimo_Click(object sender, EventArgs e)
+        {
+            _paginaActual = _totalPaginas;
+            RecargarGrilla();
         }
     }
 }

@@ -14,6 +14,7 @@ namespace BombonesApp2026.Servicios.Intefaces
         Result Editar(TipoBombonUpdateDto tipoBombonDto);
         Result Borrar(TipoBombonDeleteDto tipoBombonDto);
         Result<List<TipoBombonListDto>> FiltrarPorActivo(bool activo);
+        Result<ResultadoPaginacionDto<TipoBombonListDto>> ObtenerPagina(int pagina, int cantidad);
 
     }
 }

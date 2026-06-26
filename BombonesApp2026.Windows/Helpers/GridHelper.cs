@@ -29,12 +29,6 @@ namespace BombonesApp2026.Windows.Helpers
         {
             switch (obj)
             {
-                case TipoBombonListDto tipoDto:
-                    r.Cells[0].Value = tipoDto.TipoBombonId;
-                    r.Cells[1].Value = tipoDto.Nombre;
-                    r.Cells[2].Value = tipoDto.Descripcion;
-                    r.Cells[3].Value = tipoDto.Activo;
-                    break;
                 case FormaDePagoListDto formaDto:
                     r.Cells[0].Value = formaDto.FormaDePagoId;
                     r.Cells[1].Value = formaDto.Nombre;

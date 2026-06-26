@@ -1,5 +1,6 @@
 ﻿using BombonesApp2026.Datos.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace BombonesApp2026.Datos.Repositorios
 {
@@ -36,6 +37,18 @@ namespace BombonesApp2026.Datos.Repositorios
                 throw new KeyNotFoundException($"No se pudo borrar la entidad ID: {id} de la tabla {typeof(T).Name}");
             }
             _dbSet.Entry(entidadEnDb).CurrentValues.SetValues(entidad);
+        }
+
+        public (List<T> lista, int totalRegistros) ObtenerPagina(int pagina, 
+            int cantidad)
+        {
+            //TODO: OJO que falta el criterio de ordenamiento
+            var cantidadRegistros = _dbSet.Count();
+            var listaPaginada = _dbSet.AsNoTracking()
+                .Skip((pagina - 1) * cantidad)
+                .Take(cantidad)
+                .ToList();
+            return (listaPaginada, cantidadRegistros);  
         }
 
         public virtual T? ObtenerPorId(int id)
