@@ -7,6 +7,7 @@ using BombonesApp2026.Servicios.Mapeadores;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Linq.Expressions;
 
 namespace BombonesApp2026.Servicios.Servicios
 {
@@ -24,7 +25,7 @@ namespace BombonesApp2026.Servicios.Servicios
             _validator = validator;
         }
 
-        public Result Agregar(TipoBombonCreateDto tipoBombonDto)
+        public Result<int> Agregar(TipoBombonCreateDto tipoBombonDto)
         {
             try
             {
@@ -32,20 +33,20 @@ namespace BombonesApp2026.Servicios.Servicios
                 var result = _validator.Validate(tipoBombon);
                 if (!result.IsValid)
                 {
-                    return Result.Failure(result.Errors.Select(e => e.ErrorMessage).ToList());
+                    return Result<int>.Failure(result.Errors.Select(e => e.ErrorMessage).ToList());
                 }
                 if (_unitOfWork.TipoBombones.Existe(tipoBombon))
                 {
-                    return Result.Failure($"Ya existe un tipo de bombón {tipoBombon.Nombre}");
+                    return Result<int>.Failure($"Ya existe un tipo de bombón {tipoBombon.Nombre}");
                 }
                 _unitOfWork.TipoBombones.Agregar(tipoBombon);
                 _unitOfWork.Save();
-                return Result.Success();
+                return Result<int>.Success(tipoBombon.TipoBombonId);
             }
             catch (Exception ex)
             {
                 _unitOfWork.RollBack();
-                return Result.Failure($"Error al intentar agregar un tipo de bombón: {ex.Message}");
+                return Result<int>.Failure($"Error al intentar agregar un tipo de bombón: {ex.Message}");
             }
         }
 
@@ -214,10 +215,17 @@ namespace BombonesApp2026.Servicios.Servicios
         }
 
         public Result<ResultadoPaginacionDto<TipoBombonListDto>> ObtenerPagina(int pagina, int cantidad,
-            string campoOrden, bool esAscendente)
+            string campoOrden, bool esAscendente,
+            bool? filtroActivo=null)
         {
             try
             {
+                Expression<Func<TipoBombon, bool>>? filtrarPor = null;
+                if(filtroActivo is not null)
+                {
+                    filtrarPor = tb => tb.Activo == filtroActivo;
+                }
+                
                 Func<IQueryable<TipoBombon>, IOrderedQueryable<TipoBombon>>? ordenarPor = null;
                 switch (campoOrden)
                 {
@@ -235,7 +243,8 @@ namespace BombonesApp2026.Servicios.Servicios
                         break;
                 }
                 var resultado = _unitOfWork.TipoBombones
-                    .ObtenerPagina(pagina, cantidad,ordenarPor);
+                    .ObtenerPagina(pagina, cantidad, ordenarPor, 
+                        filtrarPor);
                 var listaDto = resultado.lista
                     .Select(tb => TipoBombonMapper.ToListDto(tb))
                     .ToList();
@@ -258,11 +267,17 @@ namespace BombonesApp2026.Servicios.Servicios
             }
         }
 
-        public Result<int> ObtenerPaginaRegistro(int seleccionadoId, int cantidadPorPagina)
+        public Result<int> ObtenerPaginaRegistro(int seleccionadoId, int cantidadPorPagina,
+            bool? filtroActivo=null)
         {
             try
             {
-                var posicion = _unitOfWork.TipoBombones.ObtenerPosicionRegistro(seleccionadoId);
+                Expression<Func<TipoBombon, bool>>? filtrarPor = null;
+                if(filtroActivo is not null)
+                {
+                    filtrarPor = tb => tb.Activo == filtroActivo;
+                }
+                var posicion = _unitOfWork.TipoBombones.ObtenerPosicionRegistro(seleccionadoId, filtrarPor);
                 var pagina = (int)Math.Ceiling((double)posicion / cantidadPorPagina);
                 return Result<int> .Success(pagina);
             }

@@ -6,11 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BombonesApp2026.Windows
 {
+    //TODO: OJO ver cuando se cambia el estado en el primer registro!!!
     public partial class frmTiposDeBombones : Form
     {
         private readonly IServiceProvider _serviceProvider;
-        private List<TipoBombonListDto>? _listaTipoBombones;
-        private bool filtroActivo = false;
 
         private BindingSource _bindingSource = new BindingSource();
 
@@ -23,6 +22,9 @@ namespace BombonesApp2026.Windows
         //para ordenar
         private string campoOrdenar = "Nombre";
         private bool esAscendente = true;
+        //para filtrar
+        private bool? filtroActivo = null;
+
         public frmTiposDeBombones(IServiceProvider provider)
         {
             InitializeComponent();
@@ -49,7 +51,7 @@ namespace BombonesApp2026.Windows
                 {
                     var resultadoConsulta = tipoBombonesServicio
                         .ObtenerPagina(_paginaActual, _cantidadPorPagina,
-                        campoOrdenar, esAscendente);
+                        campoOrdenar, esAscendente, filtroActivo);
                     if (resultadoConsulta.IsFailure)
                     {
                         ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
@@ -95,73 +97,30 @@ namespace BombonesApp2026.Windows
 
         private void activosToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                var tipoBombonesServicio = scope.ServiceProvider
-                    .GetRequiredService<ITipoBombonServicio>();
-                try
-                {
-                    var resultadoConsulta = tipoBombonesServicio.FiltrarPorActivo(true);
-                    if (resultadoConsulta.IsFailure)
-                    {
-                        ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
-                        return;
-                    }
-                    _listaTipoBombones = resultadoConsulta.Value;
-                    //MostrarDatosEnGrilla(_listaTipoBombones);
-                    ManejarControles(true);
-                }
-                catch (Exception ex)
-                {
-
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+            filtroActivo = true;
+            _paginaActual = 1;
+            tsbFiltrar.BackColor = Color.Orange;
+            RecargarGrilla();
 
         }
 
-        private void ManejarControles(bool v)
-        {
-            filtroActivo = v;
-            tsbFiltrar.BackColor = filtroActivo ? Color.Orange : SystemColors.Control;
-
-            tsbNuevo.Enabled = !v;
-            tsbEditar.Enabled = !v;
-            tsbBorrar.Enabled = !v;
-        }
 
         private void noActivosToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                var tipoBombonesServicio = scope.ServiceProvider
-                    .GetRequiredService<ITipoBombonServicio>();
-                try
-                {
-                    var resultadoConsulta = tipoBombonesServicio.FiltrarPorActivo(false);
-                    if (resultadoConsulta.IsFailure)
-                    {
-                        ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
-                        return;
-                    }
-                    _listaTipoBombones = resultadoConsulta.Value;
-                    //MostrarDatosEnGrilla(_listaTipoBombones);
-                    ManejarControles(true);
-                }
-                catch (Exception ex)
-                {
-
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+            filtroActivo = false;
+            _paginaActual = 1;
+            tsbFiltrar.BackColor = Color.Orange;
+            RecargarGrilla();
 
 
         }
 
         private void tsbActualizar_Click(object sender, EventArgs e)
         {
+            filtroActivo = null;
+            _paginaActual = 1;
+            tsbFiltrar.BackColor = SystemColors.Control;
             RecargarGrilla();
-            ManejarControles(false);
         }
 
         private void tsbBorrar_Click(object sender, EventArgs e)
@@ -210,11 +169,12 @@ namespace BombonesApp2026.Windows
                     MessageBox.Show("Registro eliminado satisfactoriamente",
                         "Mensaje",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    if(dgvDatos.Rows.Count==1 && _paginaActual > 1)
-                    {
-                        _paginaActual--;
-                    }
                     RecargarGrilla();
+                    if (_paginaActual>_totalPaginas && _totalPaginas>=1)
+                    {
+                        _paginaActual = _totalPaginas;
+                        RecargarGrilla();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -234,7 +194,33 @@ namespace BombonesApp2026.Windows
                     frm.ShowDialog();
                     if (frm.DataChanged)
                     {
-                        RecargarGrilla();
+                        bool sePuedeVer = filtroActivo is null || filtroActivo == true;
+                        if (sePuedeVer)
+                        {
+                            var nuevoId = frm.UltimoId;
+                            var tipoServicio = scope.ServiceProvider
+                                .GetRequiredService<ITipoBombonServicio>();
+                            var resultado = tipoServicio.ObtenerPaginaRegistro(nuevoId, _cantidadPorPagina);
+                            if (resultado.IsFailure)
+                            {
+                                ErrorHelper.MostrarErrores(resultado.Errors);
+                                return;
+                            }
+                            _paginaActual = resultado.Value;
+                            RecargarGrilla();
+                            var nuevoTipo = _bindingSource.List
+                                .Cast<TipoBombonListDto>()
+                                .FirstOrDefault(tp => tp.TipoBombonId == nuevoId);
+                            if (nuevoTipo is null) return;
+                            _bindingSource.Position = _bindingSource.IndexOf(nuevoTipo);
+
+                        }
+                        else
+                        {
+                            MessageBox.Show("Los registros agregados no se pueden mostrar\npor condición de filtro o búsqueda",
+                                "Advertencia",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
                     }
 
                 }
@@ -272,7 +258,8 @@ namespace BombonesApp2026.Windows
                         frm.SetTipo(tipoEditDto);
                         frm.ShowDialog();
                         var resultadoPagina = tipoBombonesServicio
-                            .ObtenerPaginaRegistro(seleccionadoId, _cantidadPorPagina);
+                            .ObtenerPaginaRegistro(seleccionadoId, _cantidadPorPagina,
+                            filtroActivo);
                         if (resultadoConsulta.IsFailure)
                         {
                             ErrorHelper.MostrarErrores(resultadoPagina.Errors);
@@ -288,11 +275,27 @@ namespace BombonesApp2026.Windows
                         {
                             RecargarGrilla();
                         }
-                        var registroEditado = _bindingSource.List
-                            .Cast<TipoBombonListDto>()
-                            .FirstOrDefault(tb => tb.TipoBombonId == seleccionadoId);
-                        if (registroEditado is null) return;
-                        _bindingSource.Position = _bindingSource.IndexOf(registroEditado);
+                        var tipoEditado = frm.GetTipo();
+                        if (tipoEditado is null) return;
+                        bool sePuedeVer = filtroActivo is null ||
+                            filtroActivo == tipoEditado.Activo;
+
+                        if (sePuedeVer)
+                        {
+                            var registroEditado = _bindingSource.List
+                                .Cast<TipoBombonListDto>()
+                                .FirstOrDefault(tb => tb.TipoBombonId == seleccionadoId);
+                            if (registroEditado is null) return;
+                            _bindingSource.Position = _bindingSource.IndexOf(registroEditado);
+
+                        }
+                        else
+                        {
+                            MessageBox.Show("El registro editado no se puede mostrar\npor condición de filtro o búsqueda",
+                                "Advertencia",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                        }
                     }
 
                 }

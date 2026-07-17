@@ -1,4 +1,6 @@
-﻿namespace BombonesApp2026.Datos.Interfaces
+﻿using System.Linq.Expressions;
+
+namespace BombonesApp2026.Datos.Interfaces
 {
     public interface IRepositorioGenerico<T> where T : class
     {
@@ -10,6 +12,7 @@
         void Borrar(int id);
         (List<T> lista, int totalRegistros) ObtenerPagina(int pagina,
             int cantidad,
-            Func<IQueryable<T>, IOrderedQueryable<T>> ordenarPor);
+            Func<IQueryable<T>, IOrderedQueryable<T>> ordenarPor,
+            Expression<Func<T, bool>>? filtrarPor=null);
     }
 }

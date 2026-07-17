@@ -14,7 +14,7 @@ namespace BombonesApp2026.Windows
             InitializeComponent();
             _tipoBombonServicio = tipoBombonServicio;
         }
-
+        public int UltimoId { get; private set; }
         public bool DataChanged { get; private set; }
         public bool ConcurrencyConflict { get; private set; }//Agregado para informar de conflicto de concurrencia
         protected override void OnLoad(EventArgs e)
@@ -60,6 +60,7 @@ namespace BombonesApp2026.Windows
                             return;
                         }
                         DataChanged = true;
+                        UltimoId = resultadoAgregar.Value;
                         var respuestaAgregarOtro = MessageBox.Show("Registro agregado\n¿Desea agregar otro?",
                                 "Mensaje", MessageBoxButtons.YesNo, MessageBoxIcon.Question,
                                 MessageBoxDefaultButton.Button2);
@@ -138,6 +139,10 @@ namespace BombonesApp2026.Windows
         public void SetTipo(TipoBombonUpdateDto? tipoEditDto)
         {
             _tipoUpdateDto= tipoEditDto;
+        }
+        public TipoBombonUpdateDto? GetTipo()
+        {
+            return _tipoUpdateDto;
         }
     }
 }

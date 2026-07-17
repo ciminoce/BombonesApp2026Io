@@ -10,12 +10,14 @@ namespace BombonesApp2026.Servicios.Intefaces
         Result<TipoBombonUpdateDto> ObtenerParaEditar(int id);
         Result<TipoBombonDeleteDto> ObtenerParaBorrar(int id);
 
-        Result Agregar(TipoBombonCreateDto tipoBombonDto);
+        Result<int> Agregar(TipoBombonCreateDto tipoBombonDto);
         Result Editar(TipoBombonUpdateDto tipoBombonDto);
         Result Borrar(TipoBombonDeleteDto tipoBombonDto);
         Result<List<TipoBombonListDto>> FiltrarPorActivo(bool activo);
         Result<ResultadoPaginacionDto<TipoBombonListDto>> ObtenerPagina(int pagina,
-            int cantidad, string campoOrdenar, bool esAscendente);
-        Result<int> ObtenerPaginaRegistro(int seleccionadoId, int cantidadPorPagina);
+            int cantidad, string campoOrdenar, bool esAscendente,
+            bool? filtroActivo=null);
+        Result<int> ObtenerPaginaRegistro(int seleccionadoId, int cantidadPorPagina,
+            bool? filtroActivo=null);
     }
 }

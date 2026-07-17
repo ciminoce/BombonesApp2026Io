@@ -1,6 +1,7 @@
 ﻿using BombonesApp2026.Datos.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using System.Linq.Expressions;
 
 namespace BombonesApp2026.Datos.Repositorios
 {
@@ -40,10 +41,15 @@ namespace BombonesApp2026.Datos.Repositorios
         }
 
         public (List<T> lista, int totalRegistros) ObtenerPagina(int pagina, 
-            int cantidad, Func<IQueryable<T>,IOrderedQueryable<T>> ordenarPor)
+            int cantidad, Func<IQueryable<T>,IOrderedQueryable<T>> ordenarPor,
+            Expression<Func<T, bool>>? filtrarPor=null)
         {
             
             var query = Query();//_dbSet.AsQueryable();
+            if(filtrarPor is not null)
+            {
+                query = query.Where(filtrarPor);
+            }
             var cantidadRegistros = query.Count();
             var listaPaginada = ordenarPor(query)
                 .Skip((pagina - 1) * cantidad)
