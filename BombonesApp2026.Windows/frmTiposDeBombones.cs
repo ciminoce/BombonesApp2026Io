@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace BombonesApp2026.Windows
 {
     //TODO: OJO ver cuando se cambia el estado en el primer registro!!!
+    //TODO: OJO ajustes también en el agregar!!!
     public partial class frmTiposDeBombones : Form
     {
         private readonly IServiceProvider _serviceProvider;
@@ -194,10 +195,10 @@ namespace BombonesApp2026.Windows
                     frm.ShowDialog();
                     if (frm.DataChanged)
                     {
+                        var nuevoId = frm.UltimoId;
                         bool sePuedeVer = filtroActivo is null || filtroActivo == true;
                         if (sePuedeVer)
                         {
-                            var nuevoId = frm.UltimoId;
                             var tipoServicio = scope.ServiceProvider
                                 .GetRequiredService<ITipoBombonServicio>();
                             var resultado = tipoServicio.ObtenerPaginaRegistro(nuevoId, _cantidadPorPagina);
@@ -207,7 +208,10 @@ namespace BombonesApp2026.Windows
                                 return;
                             }
                             _paginaActual = resultado.Value;
-                            RecargarGrilla();
+                        }
+                        RecargarGrilla();
+                        if (sePuedeVer)
+                        {
                             var nuevoTipo = _bindingSource.List
                                 .Cast<TipoBombonListDto>()
                                 .FirstOrDefault(tp => tp.TipoBombonId == nuevoId);
@@ -257,15 +261,23 @@ namespace BombonesApp2026.Windows
                         frm.Text = "Editar Tipo de Bombón";
                         frm.SetTipo(tipoEditDto);
                         frm.ShowDialog();
-                        var resultadoPagina = tipoBombonesServicio
-                            .ObtenerPaginaRegistro(seleccionadoId, _cantidadPorPagina,
-                            filtroActivo);
-                        if (resultadoConsulta.IsFailure)
+                        var tipoEditado = frm.GetTipo();
+                        if (tipoEditado is null) return;
+                        bool sePuedeVer = filtroActivo is null ||
+                            filtroActivo == tipoEditado.Activo;
+
+                        if (sePuedeVer)
                         {
-                            ErrorHelper.MostrarErrores(resultadoPagina.Errors);
-                            return;
+                            var resultadoPagina = tipoBombonesServicio
+                                .ObtenerPaginaRegistro(seleccionadoId, _cantidadPorPagina,
+                                filtroActivo);
+                            if (resultadoConsulta.IsFailure)
+                            {
+                                ErrorHelper.MostrarErrores(resultadoPagina.Errors);
+                                return;
+                            }
+                            _paginaActual = resultadoPagina.Value;
                         }
-                        _paginaActual = resultadoPagina.Value;
 
                         if (frm.ConcurrencyConflict)//si hubo concurrencia se recarga la grilla
                         {
@@ -275,11 +287,6 @@ namespace BombonesApp2026.Windows
                         {
                             RecargarGrilla();
                         }
-                        var tipoEditado = frm.GetTipo();
-                        if (tipoEditado is null) return;
-                        bool sePuedeVer = filtroActivo is null ||
-                            filtroActivo == tipoEditado.Activo;
-
                         if (sePuedeVer)
                         {
                             var registroEditado = _bindingSource.List
