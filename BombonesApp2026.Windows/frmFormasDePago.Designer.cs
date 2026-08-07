@@ -42,9 +42,6 @@
             tsbCerrar = new ToolStripButton();
             splitContainer1 = new SplitContainer();
             dgvDatos = new DataGridView();
-            colId = new DataGridViewTextBoxColumn();
-            colNombre = new DataGridViewTextBoxColumn();
-            colActivo = new DataGridViewCheckBoxColumn();
             btnUltimo = new Button();
             btnSiguiente = new Button();
             btnAnterior = new Button();
@@ -53,6 +50,9 @@
             lblCantidad = new Label();
             label2 = new Label();
             label1 = new Label();
+            colId = new DataGridViewTextBoxColumn();
+            colNombre = new DataGridViewTextBoxColumn();
+            colActivo = new DataGridViewCheckBoxColumn();
             toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -122,14 +122,14 @@
             // activosToolStripMenuItem
             // 
             activosToolStripMenuItem.Name = "activosToolStripMenuItem";
-            activosToolStripMenuItem.Size = new Size(180, 22);
+            activosToolStripMenuItem.Size = new Size(132, 22);
             activosToolStripMenuItem.Text = "Activos";
             activosToolStripMenuItem.Click += activosToolStripMenuItem_Click;
             // 
             // noActivosToolStripMenuItem
             // 
             noActivosToolStripMenuItem.Name = "noActivosToolStripMenuItem";
-            noActivosToolStripMenuItem.Size = new Size(180, 22);
+            noActivosToolStripMenuItem.Size = new Size(132, 22);
             noActivosToolStripMenuItem.Text = "No Activos";
             noActivosToolStripMenuItem.Click += noActivosToolStripMenuItem_Click;
             // 
@@ -202,26 +202,6 @@
             dgvDatos.Size = new Size(800, 321);
             dgvDatos.TabIndex = 0;
             // 
-            // colId
-            // 
-            colId.HeaderText = "Id";
-            colId.Name = "colId";
-            colId.ReadOnly = true;
-            colId.Visible = false;
-            // 
-            // colNombre
-            // 
-            colNombre.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            colNombre.HeaderText = "Forma de Pago";
-            colNombre.Name = "colNombre";
-            colNombre.ReadOnly = true;
-            // 
-            // colActivo
-            // 
-            colActivo.HeaderText = "Activo";
-            colActivo.Name = "colActivo";
-            colActivo.ReadOnly = true;
-            // 
             // btnUltimo
             // 
             btnUltimo.Image = Properties.Resources.last_24px;
@@ -230,6 +210,7 @@
             btnUltimo.Size = new Size(41, 38);
             btnUltimo.TabIndex = 7;
             btnUltimo.UseVisualStyleBackColor = true;
+            btnUltimo.Click += btnUltimo_Click;
             // 
             // btnSiguiente
             // 
@@ -239,6 +220,7 @@
             btnSiguiente.Size = new Size(41, 38);
             btnSiguiente.TabIndex = 8;
             btnSiguiente.UseVisualStyleBackColor = true;
+            btnSiguiente.Click += btnSiguiente_Click;
             // 
             // btnAnterior
             // 
@@ -248,6 +230,7 @@
             btnAnterior.Size = new Size(41, 38);
             btnAnterior.TabIndex = 9;
             btnAnterior.UseVisualStyleBackColor = true;
+            btnAnterior.Click += btnAnterior_Click;
             // 
             // btnPrimero
             // 
@@ -257,6 +240,7 @@
             btnPrimero.Size = new Size(41, 38);
             btnPrimero.TabIndex = 10;
             btnPrimero.UseVisualStyleBackColor = true;
+            btnPrimero.Click += btnPrimero_Click;
             // 
             // lblPaginas
             // 
@@ -296,6 +280,29 @@
             label1.TabIndex = 4;
             label1.Text = "Cantidad de Registros:";
             // 
+            // colId
+            // 
+            colId.DataPropertyName = "FormaDePagoId";
+            colId.HeaderText = "Id";
+            colId.Name = "colId";
+            colId.ReadOnly = true;
+            colId.Visible = false;
+            // 
+            // colNombre
+            // 
+            colNombre.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            colNombre.DataPropertyName = "Nombre";
+            colNombre.HeaderText = "Forma de Pago";
+            colNombre.Name = "colNombre";
+            colNombre.ReadOnly = true;
+            // 
+            // colActivo
+            // 
+            colActivo.DataPropertyName = "Activo";
+            colActivo.HeaderText = "Activo";
+            colActivo.Name = "colActivo";
+            colActivo.ReadOnly = true;
+            // 
             // frmFormasDePago
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -334,9 +341,6 @@
         private ToolStripDropDownButton tsbFiltrar;
         private ToolStripMenuItem activosToolStripMenuItem;
         private ToolStripMenuItem noActivosToolStripMenuItem;
-        private DataGridViewTextBoxColumn colId;
-        private DataGridViewTextBoxColumn colNombre;
-        private DataGridViewCheckBoxColumn colActivo;
         private Button btnUltimo;
         private Button btnSiguiente;
         private Button btnAnterior;
@@ -345,5 +349,8 @@
         private Label lblCantidad;
         private Label label2;
         private Label label1;
+        private DataGridViewTextBoxColumn colId;
+        private DataGridViewTextBoxColumn colNombre;
+        private DataGridViewCheckBoxColumn colActivo;
     }
 }

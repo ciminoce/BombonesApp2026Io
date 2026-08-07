@@ -81,7 +81,7 @@ namespace BombonesApp2026.Windows
             dgvDatos.DataSource = _bindingSource;
 
             int desde = 1 + (_paginaActual - 1) * _cantidadPorPagina;
-            int hasta = desde + _cantidadPorPagina;
+            int hasta = desde + _cantidadPorPagina-1;
             if (hasta > _totalRegistros)
             {
                 hasta = _totalRegistros;

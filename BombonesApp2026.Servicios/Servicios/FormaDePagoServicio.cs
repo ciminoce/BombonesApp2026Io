@@ -2,10 +2,10 @@
 using BombonesApp2026.Entidades;
 using BombonesApp2026.Servicios.Common;
 using BombonesApp2026.Servicios.DTOs.FormaDePago;
-using BombonesApp2026.Servicios.DTOs.TipoBombon;
 using BombonesApp2026.Servicios.Intefaces;
 using BombonesApp2026.Servicios.Mapeadores;
 using FluentValidation;
+using System.Linq.Expressions;
 
 namespace BombonesApp2026.Servicios.Servicios
 {
@@ -82,6 +82,45 @@ namespace BombonesApp2026.Servicios.Servicios
                 return Result<List<FormaDePagoListDto>>.Failure(ex.Message);
             }
         }
+        public Result<ResultadoPaginacionDto<FormaDePagoListDto>> ObtenerPaginado(int pagina,
+            int registros, string campoOrden, bool esAscendente,
+            bool? filtroActivo = null)
+        {
+            try
+            {
+                Expression<Func<FormaDePago, bool>>? filtradoPor = null;
+                if (filtroActivo is not null)
+                {
+                    filtradoPor = fp => fp.Activo == filtroActivo;
+                }
+                Func<IQueryable<FormaDePago>,IOrderedQueryable<FormaDePago>>? ordenarPor = null;
+                switch(campoOrden)
+                {
+                    case "FormaDePagoId":
+                        ordenarPor = esAscendente ? (q => q.OrderBy(fp => fp.FormaDePagoId)) : (q => q.OrderByDescending(fp => fp.FormaDePagoId));
+                        break;
+                    case "Nombre":
+                    default:
+                        ordenarPor = esAscendente ? (q => q.OrderBy(fp => fp.Nombre)) : (q => q.OrderByDescending(fp => fp.Nombre));
+                        break;
+                }
+                var resultado=_unitOfWork.FormasDePago.ObtenerPagina(pagina, registros, ordenarPor, filtradoPor);
+                
+                var listaDto = resultado.lista.Select(FormaDePagoMapper.ToListDto).ToList();
+                var resultadoPaginacion = new ResultadoPaginacionDto<FormaDePagoListDto>
+                {
+                    Items = listaDto,
+                    CantidadRegistros = resultado.totalRegistros,
+                    CantidadPorPagina = registros,
+                    PaginaActual = pagina
+                };
+                return Result<ResultadoPaginacionDto<FormaDePagoListDto>>.Success(resultadoPaginacion);
+            }
+            catch (Exception ex)
+            {
+                return Result<ResultadoPaginacionDto<FormaDePagoListDto>>.Failure(ex.Message);
+            }
+        }
 
         public Result<FormaDePagoListDto> ObtenerPorId(int id)
         {
@@ -144,7 +183,7 @@ namespace BombonesApp2026.Servicios.Servicios
             }
             try
             {
-                _unitOfWork.FormasDePago.Editar(formaDePago,formaDePago.FormaDePagoId);
+                _unitOfWork.FormasDePago.Editar(formaDePago, formaDePago.FormaDePagoId);
                 _unitOfWork.Save();
                 return Result.Success();
             }

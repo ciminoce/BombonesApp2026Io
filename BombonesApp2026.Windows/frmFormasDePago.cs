@@ -1,4 +1,5 @@
-﻿using BombonesApp2026.Servicios.DTOs.FormaDePago;
+﻿using BombonesApp2026.Servicios.Common;
+using BombonesApp2026.Servicios.DTOs.FormaDePago;
 using BombonesApp2026.Servicios.Intefaces;
 using BombonesApp2026.Windows.Helpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,8 +9,20 @@ namespace BombonesApp2026.Windows
     public partial class frmFormasDePago : Form
     {
         private readonly IServiceProvider _serviceProvider;
-        private List<FormaDePagoListDto>? _listaFormas;
-        private bool filtroActivo = false;
+        private BindingSource _bindingSource = new BindingSource();
+
+        //para paginar
+        private int _paginaActual = 1;
+        private int _totalRegistros = 0;
+        private int _totalPaginas = 0;
+        private int _cantidadPorPagina = 10;
+
+        //para ordenar
+        private string campoOrdenar = "Nombre";
+        private bool esAscendente = true;
+        //para filtrar
+        private bool? filtroActivo = null;
+
         public frmFormasDePago(IServiceProvider serviceProvider)
         {
             InitializeComponent();
@@ -23,16 +36,13 @@ namespace BombonesApp2026.Windows
 
         private void tsbBorrar_Click(object sender, EventArgs e)
         {
-            if (dgvDatos.SelectedRows.Count == 0)
+            if (_bindingSource.Current == null)
             {
-                MessageBox.Show("Debe seleccionar una fila",
-                    "Advertencia",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Debe seleccionar una fila de la grilla",
+                    "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            var filaSeleccionada = dgvDatos.SelectedRows[0];
-            if (filaSeleccionada.Tag is null) return;
-            FormaDePagoListDto formaListDto = (FormaDePagoListDto)filaSeleccionada.Tag;
+            var formaListDto = (FormaDePagoListDto)_bindingSource.Current;
             using (var scope = _serviceProvider.CreateScope())
             {
                 var formaDePagoServicio = scope.ServiceProvider
@@ -84,15 +94,13 @@ namespace BombonesApp2026.Windows
 
         private void tsbEditar_Click(object sender, EventArgs e)
         {
-            if (dgvDatos.SelectedCells.Count == 0)
+            if (_bindingSource.Current == null)
             {
                 MessageBox.Show("Debe seleccionar una fila de la grilla",
                     "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            var filaSeleccionada = dgvDatos.SelectedRows[0];
-            if (filaSeleccionada.Tag is null) return;
-            var formaListDto = (FormaDePagoListDto)filaSeleccionada.Tag;
+            var formaListDto = (FormaDePagoListDto)_bindingSource.Current;
             using (var scope = _serviceProvider.CreateScope())
             {
                 try
@@ -137,14 +145,16 @@ namespace BombonesApp2026.Windows
                     .GetRequiredService<IFormaDePagoServicio>();
                 try
                 {
-                    var resultadoConsulta = formaDePagoServicio.ObtenerTodos();
+                    var resultadoConsulta = formaDePagoServicio
+                        .ObtenerPaginado(_paginaActual, _cantidadPorPagina,
+                        campoOrdenar, esAscendente, filtroActivo);
                     if (resultadoConsulta.IsFailure)
                     {
                         ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
                         return;
                     }
-                    _listaFormas = resultadoConsulta.Value;
-                    MostrarDatosEnGrilla(_listaFormas);
+
+                    MostrarDatosEnGrilla(resultadoConsulta.Value!);
                 }
                 catch (Exception ex)
                 {
@@ -154,18 +164,30 @@ namespace BombonesApp2026.Windows
             }
         }
 
-        private void MostrarDatosEnGrilla(List<FormaDePagoListDto>? lista)
+        private void MostrarDatosEnGrilla(ResultadoPaginacionDto<FormaDePagoListDto> resultado)
         {
-            GridHelper.LimpiarGrilla(dgvDatos);
-            if (lista is null ||
-                lista.Count == 0) return;
-            foreach (var item in lista)
+            if (resultado.Items is null ||
+                resultado.Items.Count == 0) return;
+
+            _totalPaginas = resultado.TotalPaginas;
+            _totalRegistros = resultado.CantidadRegistros;
+
+            _bindingSource.DataSource = resultado.Items;
+            dgvDatos.DataSource = _bindingSource;
+
+            int desde = 1 + (_paginaActual - 1) * _cantidadPorPagina;
+            int hasta = desde + _cantidadPorPagina-1;
+            if (hasta > _totalRegistros)
             {
-                var r = GridHelper.ConstruirFila(dgvDatos);
-                GridHelper.SetearFila(r, item);
-                GridHelper.AgregarFila(r, dgvDatos);
+                hasta = _totalRegistros;
             }
-            lblCantidad.Text = lista.Count.ToString();
+            lblCantidad.Text = $"Del {desde} a {hasta} de {_totalRegistros}";
+            lblPaginas.Text = $"{_paginaActual} de {_totalPaginas}";
+
+            btnPrimero.Enabled = resultado.TieneRegistrosAnteriores;
+            btnAnterior.Enabled = resultado.TieneRegistrosAnteriores;
+            btnSiguiente.Enabled = resultado.TieneRegistrosSiguientes;
+            btnUltimo.Enabled = resultado.TieneRegistrosSiguientes;
         }
 
         private void frmFormasDePago_Load(object sender, EventArgs e)
@@ -175,72 +197,61 @@ namespace BombonesApp2026.Windows
 
         private void activosToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                var formaDePagoServicio = scope.ServiceProvider
-                    .GetRequiredService<IFormaDePagoServicio>();
-                try
-                {
-                    var resultadoConsulta = formaDePagoServicio.FiltrarPorActivo(true);
-                    if (resultadoConsulta.IsFailure)
-                    {
-                        ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
-                        return;
-                    }
-                    _listaFormas = resultadoConsulta.Value;
-                    MostrarDatosEnGrilla(_listaFormas);
-                    ManejarControles(true);
-                }
-                catch (Exception ex)
-                {
+            filtroActivo = true;
+            _paginaActual = 1;
+            tsbFiltrar.BackColor = Color.Orange;
+            RecargarGrilla();
 
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
 
         }
 
-        private void ManejarControles(bool v)
-        {
-            filtroActivo = v;
-            tsbFiltrar.BackColor = filtroActivo ? Color.Orange : SystemColors.Control;
-
-            tsbNuevo.Enabled = !v;
-            tsbEditar.Enabled = !v;
-            tsbBorrar.Enabled = !v;
-        }
 
         private void noActivosToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                var formaDePagoServicio = scope.ServiceProvider
-                    .GetRequiredService<IFormaDePagoServicio>();
-                try
-                {
-                    var resultadoConsulta = formaDePagoServicio.FiltrarPorActivo(false);
-                    if (resultadoConsulta.IsFailure)
-                    {
-                        ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
-                        return;
-                    }
-                    _listaFormas = resultadoConsulta.Value;
-                    MostrarDatosEnGrilla(_listaFormas);
-                    ManejarControles(true);
-                }
-                catch (Exception ex)
-                {
-
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-
+            filtroActivo = false;
+            _paginaActual = 1;
+            tsbFiltrar.BackColor = Color.Orange;
+            RecargarGrilla();
         }
 
         private void tsbActualizar_Click(object sender, EventArgs e)
         {
+            filtroActivo = null;
+            _paginaActual = 1;
+            tsbFiltrar.BackColor = SystemColors.Control;
             RecargarGrilla();
-            ManejarControles(false);
+        }
+
+        private void btnPrimero_Click(object sender, EventArgs e)
+        {
+            _paginaActual = 1;
+            RecargarGrilla();
+        }
+
+        private void btnAnterior_Click(object sender, EventArgs e)
+        {
+            _paginaActual--;
+            if (_paginaActual == 0)
+            {
+                _paginaActual = 1;
+            }
+            RecargarGrilla();
+        }
+
+        private void btnSiguiente_Click(object sender, EventArgs e)
+        {
+            _paginaActual++;
+            if (_paginaActual > _totalPaginas)
+            {
+                _paginaActual = _totalPaginas;
+            }
+            RecargarGrilla();
+        }
+
+        private void btnUltimo_Click(object sender, EventArgs e)
+        {
+            _paginaActual = _totalPaginas;
+            RecargarGrilla();
         }
     }
 }
