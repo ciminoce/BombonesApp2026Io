@@ -221,33 +221,25 @@ namespace BombonesApp2026.Windows
 
         private void btnPrimero_Click(object sender, EventArgs e)
         {
-            _estado.PaginaActual = 1;
+            _estado.PrimeraPagina();
             RecargarGrilla();
         }
 
         private void btnAnterior_Click(object sender, EventArgs e)
         {
-            _estado.PaginaActual--;
-            if (_estado.PaginaActual == 0)
-            {
-                _estado.PaginaActual = 1;
-            }
+            _estado.PaginaAnterior();
             RecargarGrilla();
         }
 
         private void btnSiguiente_Click(object sender, EventArgs e)
         {
-            _estado.PaginaActual++;
-            if (_estado.PaginaActual > _estado.TotalPaginas)
-            {
-                _estado.PaginaActual = _estado.TotalPaginas;
-            }
+            _estado.PaginaSiguiente();
             RecargarGrilla();
         }
 
         private void btnUltimo_Click(object sender, EventArgs e)
         {
-            _estado.PaginaActual = _estado.TotalPaginas;
+            _estado.UltimaPagina();
             RecargarGrilla();
         }
     }

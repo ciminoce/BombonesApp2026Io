@@ -10,5 +10,30 @@
         {
             RegistrosPorPagina=registrosPorPagina;
         }
+        #region Métodos de desplazamiento
+
+        public void PrimeraPagina()
+        {
+            PaginaActual = 1;
+        }
+        public void PaginaAnterior()
+        {
+            if (PaginaActual > 1)
+            {
+                PaginaActual--;
+            }
+        }
+        public void PaginaSiguiente()
+        {
+            if (PaginaActual < TotalPaginas)
+            {
+                PaginaActual++;
+            }
+        }
+        public void UltimaPagina()
+        {
+            PaginaActual = TotalPaginas;
+        }
+        #endregion
     }
 }
