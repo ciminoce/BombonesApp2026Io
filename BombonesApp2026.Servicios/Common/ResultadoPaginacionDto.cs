@@ -6,9 +6,6 @@
         public int CantidadRegistros { get; set; }
         public int CantidadPorPagina { get; set; }
         public int PaginaActual { get; set; }
-        public int TotalPaginas =>(int) Math.Ceiling((double)CantidadRegistros / CantidadPorPagina);
 
-        public bool TieneRegistrosAnteriores => PaginaActual > 1;
-        public bool TieneRegistrosSiguientes => PaginaActual < TotalPaginas;
     }
 }

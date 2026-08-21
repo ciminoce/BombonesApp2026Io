@@ -5,27 +5,35 @@
         public int PaginaActual { get; set; } = 1;
         public int RegistrosPorPagina { get; set; }
         public int TotalRegistros { get; set; }
-        public int TotalPaginas { get; set; }
+        public int TotalPaginas => (int)Math.Ceiling((double)TotalRegistros / RegistrosPorPagina);
         public EstadoNavegacion(int registrosPorPagina=10)
         {
             RegistrosPorPagina=registrosPorPagina;
         }
         #region Métodos de desplazamiento
 
+        public bool PuedeIrAnterior()
+        {
+            return PaginaActual > 1;
+        }
+        public bool PuedeIrSiguiente()
+        {
+            return PaginaActual < TotalPaginas;
+        }
         public void PrimeraPagina()
         {
             PaginaActual = 1;
         }
         public void PaginaAnterior()
         {
-            if (PaginaActual > 1)
+            if (PuedeIrAnterior())
             {
                 PaginaActual--;
             }
         }
         public void PaginaSiguiente()
         {
-            if (PaginaActual < TotalPaginas)
+            if (PuedeIrSiguiente())
             {
                 PaginaActual++;
             }

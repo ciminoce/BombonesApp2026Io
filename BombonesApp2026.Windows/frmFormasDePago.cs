@@ -167,19 +167,18 @@ namespace BombonesApp2026.Windows
             if (resultado.Items is null ||
                 resultado.Items.Count == 0) return;
 
-            _estado.TotalPaginas = resultado.TotalPaginas;
             _estado.TotalRegistros = resultado.CantidadRegistros;
 
             _bindingSource.DataSource = resultado.Items;
-           
 
             lblCantidad.Text = _estado.TextoRegistros();
             lblPaginas.Text = _estado.TextoPaginas();
 
-            btnPrimero.Enabled = resultado.TieneRegistrosAnteriores;
-            btnAnterior.Enabled = resultado.TieneRegistrosAnteriores;
-            btnSiguiente.Enabled = resultado.TieneRegistrosSiguientes;
-            btnUltimo.Enabled = resultado.TieneRegistrosSiguientes;
+            btnPrimero.Enabled = _estado.PuedeIrAnterior();
+            btnAnterior.Enabled = _estado.PuedeIrAnterior();
+            btnSiguiente.Enabled = _estado.PuedeIrSiguiente();
+            btnUltimo.Enabled = _estado.PuedeIrSiguiente();
+
         }
 
         private void frmFormasDePago_Load(object sender, EventArgs e)
