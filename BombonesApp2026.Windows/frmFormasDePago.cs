@@ -12,10 +12,7 @@ namespace BombonesApp2026.Windows
         private BindingSource _bindingSource = new BindingSource();
 
         //para paginar
-        private int _paginaActual = 1;
-        private int _totalRegistros = 0;
-        private int _totalPaginas = 0;
-        private int _cantidadPorPagina = 10;
+        private EstadoNavegacion _estado = new(10);
 
         //para ordenar
         private string campoOrdenar = "Nombre";
@@ -146,7 +143,7 @@ namespace BombonesApp2026.Windows
                 try
                 {
                     var resultadoConsulta = formaDePagoServicio
-                        .ObtenerPaginado(_paginaActual, _cantidadPorPagina,
+                        .ObtenerPaginado(_estado.PaginaActual, _estado.RegistrosPorPagina,
                         campoOrdenar, esAscendente, filtroActivo);
                     if (resultadoConsulta.IsFailure)
                     {
@@ -169,20 +166,20 @@ namespace BombonesApp2026.Windows
             if (resultado.Items is null ||
                 resultado.Items.Count == 0) return;
 
-            _totalPaginas = resultado.TotalPaginas;
-            _totalRegistros = resultado.CantidadRegistros;
+            _estado.TotalPaginas = resultado.TotalPaginas;
+            _estado.TotalRegistros = resultado.CantidadRegistros;
 
             _bindingSource.DataSource = resultado.Items;
             dgvDatos.DataSource = _bindingSource;
 
-            int desde = 1 + (_paginaActual - 1) * _cantidadPorPagina;
-            int hasta = desde + _cantidadPorPagina-1;
-            if (hasta > _totalRegistros)
+            int desde = 1 + (_estado.PaginaActual - 1) * _estado.RegistrosPorPagina;
+            int hasta = desde + _estado.RegistrosPorPagina-1;
+            if (hasta > _estado.TotalRegistros)
             {
-                hasta = _totalRegistros;
+                hasta = _estado.TotalRegistros;
             }
-            lblCantidad.Text = $"Del {desde} a {hasta} de {_totalRegistros}";
-            lblPaginas.Text = $"{_paginaActual} de {_totalPaginas}";
+            lblCantidad.Text = $"Del {desde} a {hasta} de {_estado.TotalRegistros}";
+            lblPaginas.Text = $"{_estado.PaginaActual} de {_estado.TotalPaginas}";
 
             btnPrimero.Enabled = resultado.TieneRegistrosAnteriores;
             btnAnterior.Enabled = resultado.TieneRegistrosAnteriores;
@@ -198,7 +195,7 @@ namespace BombonesApp2026.Windows
         private void activosToolStripMenuItem_Click(object sender, EventArgs e)
         {
             filtroActivo = true;
-            _paginaActual = 1;
+            _estado.PaginaActual = 1;
             tsbFiltrar.BackColor = Color.Orange;
             RecargarGrilla();
 
@@ -209,7 +206,7 @@ namespace BombonesApp2026.Windows
         private void noActivosToolStripMenuItem_Click(object sender, EventArgs e)
         {
             filtroActivo = false;
-            _paginaActual = 1;
+            _estado.PaginaActual = 1;
             tsbFiltrar.BackColor = Color.Orange;
             RecargarGrilla();
         }
@@ -217,40 +214,40 @@ namespace BombonesApp2026.Windows
         private void tsbActualizar_Click(object sender, EventArgs e)
         {
             filtroActivo = null;
-            _paginaActual = 1;
+            _estado.PaginaActual = 1;
             tsbFiltrar.BackColor = SystemColors.Control;
             RecargarGrilla();
         }
 
         private void btnPrimero_Click(object sender, EventArgs e)
         {
-            _paginaActual = 1;
+            _estado.PaginaActual = 1;
             RecargarGrilla();
         }
 
         private void btnAnterior_Click(object sender, EventArgs e)
         {
-            _paginaActual--;
-            if (_paginaActual == 0)
+            _estado.PaginaActual--;
+            if (_estado.PaginaActual == 0)
             {
-                _paginaActual = 1;
+                _estado.PaginaActual = 1;
             }
             RecargarGrilla();
         }
 
         private void btnSiguiente_Click(object sender, EventArgs e)
         {
-            _paginaActual++;
-            if (_paginaActual > _totalPaginas)
+            _estado.PaginaActual++;
+            if (_estado.PaginaActual > _estado.TotalPaginas)
             {
-                _paginaActual = _totalPaginas;
+                _estado.PaginaActual = _estado.TotalPaginas;
             }
             RecargarGrilla();
         }
 
         private void btnUltimo_Click(object sender, EventArgs e)
         {
-            _paginaActual = _totalPaginas;
+            _estado.PaginaActual = _estado.TotalPaginas;
             RecargarGrilla();
         }
     }
