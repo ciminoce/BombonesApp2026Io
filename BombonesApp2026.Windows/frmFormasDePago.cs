@@ -24,6 +24,7 @@ namespace BombonesApp2026.Windows
         {
             InitializeComponent();
             _serviceProvider = serviceProvider;
+            dgvDatos.DataSource= _bindingSource;
         }
 
         private void tsbCerrar_Click(object sender, EventArgs e)
@@ -170,16 +171,10 @@ namespace BombonesApp2026.Windows
             _estado.TotalRegistros = resultado.CantidadRegistros;
 
             _bindingSource.DataSource = resultado.Items;
-            dgvDatos.DataSource = _bindingSource;
+           
 
-            int desde = 1 + (_estado.PaginaActual - 1) * _estado.RegistrosPorPagina;
-            int hasta = desde + _estado.RegistrosPorPagina-1;
-            if (hasta > _estado.TotalRegistros)
-            {
-                hasta = _estado.TotalRegistros;
-            }
-            lblCantidad.Text = $"Del {desde} a {hasta} de {_estado.TotalRegistros}";
-            lblPaginas.Text = $"{_estado.PaginaActual} de {_estado.TotalPaginas}";
+            lblCantidad.Text = _estado.TextoRegistros();
+            lblPaginas.Text = _estado.TextoPaginas();
 
             btnPrimero.Enabled = resultado.TieneRegistrosAnteriores;
             btnAnterior.Enabled = resultado.TieneRegistrosAnteriores;

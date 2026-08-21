@@ -35,5 +35,22 @@
             PaginaActual = TotalPaginas;
         }
         #endregion
+        #region Cálculos
+        private (int desde, int hasta) CalcularRango()
+        {
+            int desde = 1 + (PaginaActual - 1) * RegistrosPorPagina;
+            int hasta = int.Min(desde + RegistrosPorPagina - 1, TotalRegistros);
+            return (desde, hasta);
+        }
+        public string TextoRegistros()
+        {
+            var (desde, hasta) = CalcularRango();
+            return $"Del {desde} a {hasta} de {TotalRegistros}";
+        }
+        public string TextoPaginas()
+        {
+            return $"{PaginaActual} de {TotalPaginas}";
+        }
+        #endregion
     }
 }
