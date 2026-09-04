@@ -3,6 +3,7 @@ using BombonesApp2026.Servicios.DTOs.TipoBombon;
 using BombonesApp2026.Servicios.Intefaces;
 using BombonesApp2026.Windows.Helpers;
 using Microsoft.Extensions.DependencyInjection;
+using System.Runtime.CompilerServices;
 
 namespace BombonesApp2026.Windows
 {
@@ -13,7 +14,7 @@ namespace BombonesApp2026.Windows
         private readonly IServiceProvider _serviceProvider;
 
         private BindingSource _bindingSource = new BindingSource();
-
+        private ServicioMensajes _servicioMensajes = new ServicioMensajes();
         //para paginar
         private EstadoNavegacion _estado = new(10);
         //para ordenar
@@ -56,25 +57,24 @@ namespace BombonesApp2026.Windows
                         return;
                     }
 
-                    MostrarDatosEnGrilla(resultadoConsulta.Value!);
+                    ActualizarVista(resultadoConsulta.Value!);
                 }
                 catch (Exception ex)
                 {
-
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    _servicioMensajes.Error(ex.Message);
                 }
             }
         }
 
-        private void MostrarDatosEnGrilla(ResultadoPaginacionDto<TipoBombonListDto> resultado)
+        private void ActualizarVista(ResultadoPaginacionDto<TipoBombonListDto> resultado)
         {
-            if (resultado.Items is null ||
-                resultado.Items.Count == 0) return;
+            _estado.Actualizar(resultado.CantidadRegistros);
+            MostrarEnGrilla(resultado);
+            ActualizarNavegacion();
 
-            _estado.TotalRegistros = resultado.CantidadRegistros;
-
-            _bindingSource.DataSource = resultado.Items;
-
+        }
+        private void ActualizarNavegacion()
+        {
             lblCantidad.Text = _estado.TextoRegistros();
             lblPaginas.Text = _estado.TextoPaginas();
 
@@ -84,13 +84,16 @@ namespace BombonesApp2026.Windows
             btnUltimo.Enabled = _estado.PuedeIrSiguiente();
 
         }
+        private void MostrarEnGrilla(ResultadoPaginacionDto<TipoBombonListDto> resultado)
+        {
+            _bindingSource.DataSource = resultado.Items;
+        }
 
         private void activosToolStripMenuItem_Click(object sender, EventArgs e)
         {
             filtroActivo = true;
-            _estado.PaginaActual = 1;
             tsbFiltrar.BackColor = Color.Orange;
-            RecargarGrilla();
+            ActualizarInformacion();
 
         }
 
@@ -98,28 +101,29 @@ namespace BombonesApp2026.Windows
         private void noActivosToolStripMenuItem_Click(object sender, EventArgs e)
         {
             filtroActivo = false;
-            _estado.PaginaActual = 1;
             tsbFiltrar.BackColor = Color.Orange;
+            ActualizarInformacion();
+
+        }
+
+        private void ActualizarInformacion()
+        {
+            _estado.PaginaActual = 1;
             RecargarGrilla();
-
-
         }
 
         private void tsbActualizar_Click(object sender, EventArgs e)
         {
             filtroActivo = null;
-            _estado.PaginaActual = 1;
             tsbFiltrar.BackColor = SystemColors.Control;
-            RecargarGrilla();
+            ActualizarInformacion();
         }
 
         private void tsbBorrar_Click(object sender, EventArgs e)
         {
             if (_bindingSource.Current==null)
             {
-                MessageBox.Show("Debe seleccionar una fila",
-                    "Advertencia",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                _servicioMensajes.Advertencia("Debe seleccionar una fila");
                 return;
             }
             TipoBombonListDto tipoListDto = (TipoBombonListDto)_bindingSource.Current;
@@ -135,10 +139,7 @@ namespace BombonesApp2026.Windows
 
                 }
                 var tipoDeleteDto = resultadoConsulta.Value;
-                var dr = MessageBox.Show($"¿Desea borrar el tipo {tipoListDto.Nombre}?",
-                    "Confirmar Borrado", MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-                    MessageBoxDefaultButton.Button2);
-                if (dr == DialogResult.No) return;
+                if (!_servicioMensajes.Confirmar($"¿Desea borrar el tipo {tipoListDto.Nombre}?")) return;
                 try
                 {
                     var resultadoEliminacion = tipoBombonServicio
@@ -156,9 +157,7 @@ namespace BombonesApp2026.Windows
                         return;
 
                     }
-                    MessageBox.Show("Registro eliminado satisfactoriamente",
-                        "Mensaje",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    _servicioMensajes.Informacion("Registro eliminado satisfactoriamente");
                     RecargarGrilla();
                     if (_estado.PaginaActual>_estado.TotalPaginas && _estado.TotalPaginas>=1)
                     {
@@ -169,7 +168,7 @@ namespace BombonesApp2026.Windows
                 catch (Exception ex)
                 {
 
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    _servicioMensajes.Error(ex.Message);
                 }
             }
         }
@@ -210,9 +209,7 @@ namespace BombonesApp2026.Windows
                         }
                         else
                         {
-                            MessageBox.Show("Los registros agregados no se pueden mostrar\npor condición de filtro o búsqueda",
-                                "Advertencia",
-                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            _servicioMensajes.Advertencia("Los registros agregados no se pueden mostrar\npor condición de filtro o búsqueda");
                         }
                     }
 

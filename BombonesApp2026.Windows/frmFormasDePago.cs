@@ -167,7 +167,7 @@ namespace BombonesApp2026.Windows
             if (resultado.Items is null ||
                 resultado.Items.Count == 0) return;
 
-            _estado.TotalRegistros = resultado.CantidadRegistros;
+            _estado.Actualizar(resultado.CantidadRegistros);
 
             _bindingSource.DataSource = resultado.Items;
 
