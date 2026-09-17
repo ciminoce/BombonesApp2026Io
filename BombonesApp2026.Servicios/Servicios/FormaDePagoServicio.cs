@@ -12,27 +12,37 @@ namespace BombonesApp2026.Servicios.Servicios
     public class FormaDePagoServicio : IFormaDePagoServicio
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IValidator<FormaDePago> _validator;
+        private readonly IValidator<FormaDePagoCreateDto> _createValidator;
+        private readonly IValidator<FormaDePagoUpdateDto> _updateValidator;
 
-        public FormaDePagoServicio(IUnitOfWork unitOfWork,
-            IValidator<FormaDePago> validator)
+        public FormaDePagoServicio(
+            IUnitOfWork unitOfWork,
+            IValidator<FormaDePagoCreateDto> createValidator,
+            IValidator<FormaDePagoUpdateDto> updateValidator)
         {
             _unitOfWork = unitOfWork;
-            _validator = validator;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         public Result Agregar(FormaDePagoCreateDto formaDePagoDto)
         {
-            var formaDePago = FormaDePagoMapper.ToEntidad(formaDePagoDto);
-            var result = _validator.Validate(formaDePago);
+            // 1. Validar DTO antes del mapeo
+            var result = _createValidator.Validate(formaDePagoDto);
             if (!result.IsValid)
             {
                 return Result.Failure(result.Errors.Select(e => e.ErrorMessage).ToList());
             }
+
+            // 2. Mapear a Entidad
+            var formaDePago = FormaDePagoMapper.ToEntidad(formaDePagoDto);
+
+            // 3. Regla de negocio: Duplicados
             if (_unitOfWork.FormasDePago.Existe(formaDePago))
             {
-                return Result.Failure("Forma de pago already exist!!!");
+                return Result.Failure($"Ya existe una forma de pago con el nombre {formaDePago.Nombre}.");
             }
+
             try
             {
                 _unitOfWork.FormasDePago.Agregar(formaDePago);
@@ -41,8 +51,47 @@ namespace BombonesApp2026.Servicios.Servicios
             }
             catch (Exception ex)
             {
+                _unitOfWork.RollBack();
+                return Result.Failure($"Error al intentar agregar la forma de pago: {ex.Message}");
+            }
+        }
 
-                return Result.Failure(ex.Message);
+        public Result Editar(FormaDePagoUpdateDto formaDePagoDto)
+        {
+            // 1. Validar DTO antes de tocar la BD o mapear
+            var result = _updateValidator.Validate(formaDePagoDto);
+            if (!result.IsValid)
+            {
+                return Result.Failure(result.Errors.Select(e => e.ErrorMessage).ToList());
+            }
+
+            // 2. Obtener entidad existente
+            var formaDePago = _unitOfWork.FormasDePago.ObtenerPorId(formaDePagoDto.FormaDePagoId);
+            if (formaDePago == null)
+            {
+                return Result.Failure("Forma de pago no encontrada.");
+            }
+
+            // 3. Modificar propiedades
+            formaDePago.Nombre = formaDePagoDto.Nombre;
+            formaDePago.Activo = formaDePagoDto.Activo;
+
+            // 4. Regla de negocio: Duplicados (excluyendo el propio registro en el repositorio/método Existe)
+            if (_unitOfWork.FormasDePago.Existe(formaDePago))
+            {
+                return Result.Failure($"Ya existe otra forma de pago con el nombre {formaDePago.Nombre}.");
+            }
+
+            try
+            {
+                _unitOfWork.FormasDePago.Editar(formaDePago, formaDePago.FormaDePagoId);
+                _unitOfWork.Save();
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                _unitOfWork.RollBack();
+                return Result.Failure($"Error al intentar editar la forma de pago: {ex.Message}");
             }
         }
 
@@ -51,9 +100,9 @@ namespace BombonesApp2026.Servicios.Servicios
             var formaDePago = _unitOfWork.FormasDePago.ObtenerPorId(id);
             if (formaDePago == null)
             {
-                return Result.Failure("Forma de pago no encontrada!!!");
+                return Result.Failure("Forma de pago no encontrada.");
             }
-            //Luego ver si no está relacionada con otras entidades, como ventas, para no eliminarla físicamente
+
             try
             {
                 _unitOfWork.FormasDePago.Borrar(formaDePago.FormaDePagoId);
@@ -62,8 +111,8 @@ namespace BombonesApp2026.Servicios.Servicios
             }
             catch (Exception ex)
             {
-
-                return Result.Failure(ex.Message);
+                _unitOfWork.RollBack();
+                return Result.Failure($"Error al intentar borrar la forma de pago: {ex.Message}");
             }
         }
 
@@ -74,51 +123,10 @@ namespace BombonesApp2026.Servicios.Servicios
                 var lista = _unitOfWork.FormasDePago.ObtenerTodos();
                 var listaDto = lista.Select(FormaDePagoMapper.ToListDto).ToList();
                 return Result<List<FormaDePagoListDto>>.Success(listaDto);
-
             }
             catch (Exception ex)
             {
-
                 return Result<List<FormaDePagoListDto>>.Failure(ex.Message);
-            }
-        }
-        public Result<ResultadoPaginacionDto<FormaDePagoListDto>> ObtenerPaginado(int pagina,
-            int registros, string campoOrden, bool esAscendente,
-            bool? filtroActivo = null)
-        {
-            try
-            {
-                Expression<Func<FormaDePago, bool>>? filtradoPor = null;
-                if (filtroActivo is not null)
-                {
-                    filtradoPor = fp => fp.Activo == filtroActivo;
-                }
-                Func<IQueryable<FormaDePago>,IOrderedQueryable<FormaDePago>>? ordenarPor = null;
-                switch(campoOrden)
-                {
-                    case "FormaDePagoId":
-                        ordenarPor = esAscendente ? (q => q.OrderBy(fp => fp.FormaDePagoId)) : (q => q.OrderByDescending(fp => fp.FormaDePagoId));
-                        break;
-                    case "Nombre":
-                    default:
-                        ordenarPor = esAscendente ? (q => q.OrderBy(fp => fp.Nombre)) : (q => q.OrderByDescending(fp => fp.Nombre));
-                        break;
-                }
-                var resultado=_unitOfWork.FormasDePago.ObtenerPagina(pagina, registros, ordenarPor, filtradoPor);
-                
-                var listaDto = resultado.lista.Select(FormaDePagoMapper.ToListDto).ToList();
-                var resultadoPaginacion = new ResultadoPaginacionDto<FormaDePagoListDto>
-                {
-                    Items = listaDto,
-                    CantidadRegistros = resultado.totalRegistros,
-                    CantidadPorPagina = registros,
-                    PaginaActual = pagina
-                };
-                return Result<ResultadoPaginacionDto<FormaDePagoListDto>>.Success(resultadoPaginacion);
-            }
-            catch (Exception ex)
-            {
-                return Result<ResultadoPaginacionDto<FormaDePagoListDto>>.Failure(ex.Message);
             }
         }
 
@@ -129,15 +137,14 @@ namespace BombonesApp2026.Servicios.Servicios
                 var formaDePago = _unitOfWork.FormasDePago.ObtenerPorId(id);
                 if (formaDePago == null)
                 {
-                    return Result<FormaDePagoListDto>.Failure("Forma de pago no encontrada!!!");
+                    return Result<FormaDePagoListDto>.Failure("Forma de pago no encontrada.");
                 }
+
                 var formaDePagoDto = FormaDePagoMapper.ToListDto(formaDePago);
                 return Result<FormaDePagoListDto>.Success(formaDePagoDto);
-
             }
             catch (Exception ex)
             {
-
                 return Result<FormaDePagoListDto>.Failure(ex.Message);
             }
         }
@@ -152,45 +159,12 @@ namespace BombonesApp2026.Servicios.Servicios
                     var formaDePagoDto = FormaDePagoMapper.ToUpdateDto(formaDePago);
                     return Result<FormaDePagoUpdateDto>.Success(formaDePagoDto);
                 }
-                return Result<FormaDePagoUpdateDto>.Failure("Forma de pago no encontrada!!!");
+
+                return Result<FormaDePagoUpdateDto>.Failure("Forma de pago no encontrada.");
             }
             catch (Exception ex)
             {
-
                 return Result<FormaDePagoUpdateDto>.Failure(ex.Message);
-            }
-        }
-
-        public Result Editar(FormaDePagoUpdateDto formaDePagoDto)
-        {
-            var formaDePagoToValidate = FormaDePagoMapper.ToEntidad(formaDePagoDto);
-            var result = _validator.Validate(formaDePagoToValidate);
-            if (!result.IsValid)
-            {
-                return Result.Failure(result.Errors.Select(e => e.ErrorMessage).ToList());
-            }
-            var formaDePago = _unitOfWork.FormasDePago.ObtenerPorId(formaDePagoDto.FormaDePagoId);
-            if (formaDePago == null)
-            {
-                return Result.Failure("Forma de pago no encontrada!!!");
-            }
-            formaDePago.Nombre = formaDePagoDto.Nombre;
-            formaDePago.Activo = formaDePagoDto.Activo;
-
-            if (_unitOfWork.FormasDePago.Existe(formaDePago))
-            {
-                return Result.Failure("Forma de pago existentet!!!");
-            }
-            try
-            {
-                _unitOfWork.FormasDePago.Editar(formaDePago, formaDePago.FormaDePagoId);
-                _unitOfWork.Save();
-                return Result.Success();
-            }
-            catch (Exception ex)
-            {
-
-                return Result.Failure(ex.Message);
             }
         }
 
@@ -199,14 +173,53 @@ namespace BombonesApp2026.Servicios.Servicios
             try
             {
                 var query = _unitOfWork.FormasDePago.Query();
-                var lista = query.Where(tb => tb.Activo == activo);
-                var listaDto = lista.Select(tb => FormaDePagoMapper.ToListDto(tb)).ToList();
+                var lista = query.Where(fp => fp.Activo == activo);
+                var listaDto = lista.Select(FormaDePagoMapper.ToListDto).ToList();
                 return Result<List<FormaDePagoListDto>>.Success(listaDto);
             }
             catch (Exception ex)
             {
-
                 return Result<List<FormaDePagoListDto>>.Failure($"Error al intentar filtrar las formas de pago: {ex.Message}");
+            }
+        }
+
+        public Result<ResultadoPaginacionDto<FormaDePagoListDto>> ObtenerPaginado(
+            int pagina,
+            int registros,
+            string campoOrden,
+            bool esAscendente,
+            bool? filtroActivo = null)
+        {
+            try
+            {
+                Expression<Func<FormaDePago, bool>>? filtradoPor = null;
+                if (filtroActivo is not null)
+                {
+                    filtradoPor = fp => fp.Activo == filtroActivo;
+                }
+
+                Func<IQueryable<FormaDePago>, IOrderedQueryable<FormaDePago>>? ordenarPor = campoOrden switch
+                {
+                    "FormaDePagoId" => q => esAscendente ? q.OrderBy(fp => fp.FormaDePagoId) : q.OrderByDescending(fp => fp.FormaDePagoId),
+                    _ => q => esAscendente ? q.OrderBy(fp => fp.Nombre) : q.OrderByDescending(fp => fp.Nombre)
+                };
+
+                var resultado = _unitOfWork.FormasDePago.ObtenerPagina(pagina, registros, ordenarPor, filtradoPor);
+                var listaDto = resultado.lista.Select(FormaDePagoMapper.ToListDto).ToList();
+
+                var resultadoPaginacion = new ResultadoPaginacionDto<FormaDePagoListDto>
+                {
+                    Items = listaDto,
+                    CantidadRegistros = resultado.totalRegistros,
+                    CantidadPorPagina = registros,
+                    PaginaActual = pagina
+                };
+
+                return Result<ResultadoPaginacionDto<FormaDePagoListDto>>.Success(resultadoPaginacion);
+            }
+            catch (Exception ex)
+            {
+                return Result<ResultadoPaginacionDto<FormaDePagoListDto>>.Failure(ex.Message);
             }
         }
     }

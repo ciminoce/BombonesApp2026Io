@@ -11,38 +11,99 @@ namespace BombonesApp2026.Servicios.Servicios
     public class ClienteServicio : IClienteServicio
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IValidator<Cliente> _validator;
-        public ClienteServicio(IUnitOfWork unitOfWork, IValidator<Cliente> validator)
+        private readonly IValidator<ClienteCreateDto> _createValidator;
+        private readonly IValidator<ClienteUpdateDto> _updateValidator;
+
+        public ClienteServicio(
+            IUnitOfWork unitOfWork,
+            IValidator<ClienteCreateDto> createValidator,
+            IValidator<ClienteUpdateDto> updateValidator)
         {
             _unitOfWork = unitOfWork;
-            _validator = validator;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         public Result Agregar(ClienteCreateDto clienteDto)
         {
-            var  cliente=ClienteMapper.ToEntidad(clienteDto);
-            var validationResult = _validator.Validate(cliente);
-            if(!validationResult.IsValid)
+            // 1. Validar el DTO directamente
+            var validationResult = _createValidator.Validate(clienteDto);
+            if (!validationResult.IsValid)
             {
                 var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
                 return Result.Failure(errors);
             }
-            if(_unitOfWork.Clientes.Existe(cliente))
+
+            // 2. Mapear a entidad
+            var cliente = ClienteMapper.ToEntidad(clienteDto);
+
+            // 3. Regla de negocio
+            if (_unitOfWork.Clientes.Existe(cliente))
             {
-                return Result.Failure("El cliente ya existe");
+                return Result.Failure("El cliente ya existe.");
             }
+
             try
             {
                 _unitOfWork.Clientes.Agregar(cliente);
                 _unitOfWork.Save();
                 return Result.Success();
-
             }
             catch (Exception ex)
             {
+                _unitOfWork.RollBack();
+                return Result.Failure($"Error al intentar agregar el cliente: {ex.Message}");
+            }
+        }
 
-                return Result.Failure(ex.Message);
-            } 
+        public Result Editar(ClienteUpdateDto clienteDto)
+        {
+            // 1. Validar el DTO de actualización
+            var validationResult = _updateValidator.Validate(clienteDto);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+                return Result.Failure(errors);
+            }
+
+            // 2. Obtener la entidad persistida
+            var cliente = _unitOfWork.Clientes.ObtenerPorId(clienteDto.ClienteId);
+            if (cliente == null)
+            {
+                return Result.Failure("Cliente no encontrado.");
+            }
+
+            // 3. Actualizar valores
+            cliente.Nombre = clienteDto.Nombre;
+            cliente.Apellido = clienteDto.Apellido;
+            cliente.Documento = clienteDto.Documento;
+            cliente.Telefono = clienteDto.Telefono;
+            cliente.Email = clienteDto.Email;
+            cliente.Calle = clienteDto.Calle;
+            cliente.Numero = clienteDto.Numero;
+            cliente.Localidad = clienteDto.Localidad;
+            cliente.Provincia = clienteDto.Provincia;
+            cliente.CodigoPostal = clienteDto.CodigoPostal;
+            cliente.Activo = clienteDto.Activo;
+            cliente.RowVersion = clienteDto.RowVersion;
+
+            // 4. Regla de negocio para duplicados en edición
+            if (_unitOfWork.Clientes.Existe(cliente))
+            {
+                return Result.Failure("Ya existe otro cliente registrado con los mismos datos.");
+            }
+
+            try
+            {
+                _unitOfWork.Clientes.Editar(cliente, cliente.ClienteId);
+                _unitOfWork.Save();
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                _unitOfWork.RollBack();
+                return Result.Failure($"Error al intentar editar el cliente: {ex.Message}");
+            }
         }
 
         public Result Borrar(int id)
@@ -50,9 +111,9 @@ namespace BombonesApp2026.Servicios.Servicios
             var cliente = _unitOfWork.Clientes.ObtenerPorId(id);
             if (cliente == null)
             {
-                return Result.Failure("Cliente no encontrado");
+                return Result.Failure("Cliente no encontrado.");
             }
-            //verificar si el cliente tiene ventas asociadas
+
             try
             {
                 _unitOfWork.Clientes.Borrar(cliente.ClienteId);
@@ -61,8 +122,8 @@ namespace BombonesApp2026.Servicios.Servicios
             }
             catch (Exception ex)
             {
-
-                return Result.Failure(ex.Message);
+                _unitOfWork.RollBack();
+                return Result.Failure($"Error al intentar borrar el cliente: {ex.Message}");
             }
         }
 
@@ -80,11 +141,11 @@ namespace BombonesApp2026.Servicios.Servicios
                     Email = c.Email,
                     Activo = c.Activo
                 }).ToList();
+
                 return Result<List<ClienteListDto>>.Success(listaDto);
             }
             catch (Exception ex)
             {
-
                 return Result<List<ClienteListDto>>.Failure(ex.Message);
             }
         }
@@ -94,10 +155,11 @@ namespace BombonesApp2026.Servicios.Servicios
             try
             {
                 var cliente = _unitOfWork.Clientes.ObtenerPorId(id);
-                if( cliente == null)
+                if (cliente == null)
                 {
-                    return Result<ClienteListDto>.Failure("Cliente no encontrado");
+                    return Result<ClienteListDto>.Failure("Cliente no encontrado.");
                 }
+
                 var clienteDto = new ClienteListDto
                 {
                     ClienteId = cliente.ClienteId,
@@ -107,11 +169,11 @@ namespace BombonesApp2026.Servicios.Servicios
                     Email = cliente.Email,
                     Activo = cliente.Activo
                 };
+
                 return Result<ClienteListDto>.Success(clienteDto);
             }
             catch (Exception ex)
             {
-
                 return Result<ClienteListDto>.Failure(ex.Message);
             }
         }
@@ -121,10 +183,11 @@ namespace BombonesApp2026.Servicios.Servicios
             try
             {
                 var cliente = _unitOfWork.Clientes.ObtenerPorId(id);
-                if ( cliente == null)
+                if (cliente == null)
                 {
-                    return Result<ClienteUpdateDto>.Failure("Cliente no encontrado");
+                    return Result<ClienteUpdateDto>.Failure("Cliente no encontrado.");
                 }
+
                 var clienteDto = new ClienteUpdateDto
                 {
                     ClienteId = cliente.ClienteId,
@@ -141,49 +204,12 @@ namespace BombonesApp2026.Servicios.Servicios
                     Activo = cliente.Activo,
                     RowVersion = cliente.RowVersion
                 };
+
                 return Result<ClienteUpdateDto>.Success(clienteDto);
             }
             catch (Exception ex)
             {
-
                 return Result<ClienteUpdateDto>.Failure(ex.Message);
-            }
-        }
-
-        public Result Editar(ClienteUpdateDto clienteDto)
-        {
-            var clienteToValidate = ClienteMapper.ToEntidad(clienteDto);
-            var validationResult = _validator.Validate(clienteToValidate);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-                return Result.Failure(errors);
-            }
-            var cliente = _unitOfWork.Clientes.ObtenerPorId(clienteDto.ClienteId);
-            if (cliente == null)
-            {
-                return Result.Failure("Cliente no encontrado");
-            }
-            cliente.Nombre = clienteDto.Nombre;
-            cliente.Apellido = clienteDto.Apellido;
-            cliente.Documento = clienteDto.Documento;
-            cliente.Telefono = clienteDto.Telefono;
-            cliente.Email = clienteDto.Email;
-            cliente.Calle = clienteDto.Calle;
-            cliente.Numero = clienteDto.Numero;
-            cliente.Localidad = clienteDto.Localidad;
-            cliente.Provincia = clienteDto.Provincia;
-            cliente.CodigoPostal = clienteDto.CodigoPostal;
-            cliente.Activo = clienteDto.Activo;
-            try
-            {
-                _unitOfWork.Clientes.Editar(cliente, cliente.ClienteId);
-                _unitOfWork.Save();
-                return Result.Success();
-            }
-            catch (Exception ex)
-            {
-                return Result.Failure(ex.Message);
             }
         }
     }
