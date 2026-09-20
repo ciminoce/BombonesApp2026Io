@@ -49,7 +49,7 @@ namespace BombonesApp2026.Windows
                 {
                     if (!_esEdicion)
                     {
-                        
+
                         var _tipoCreateDto = new TipoBombonCreateDto();
                         _tipoCreateDto.Nombre = txtTipoBombon.Text;
                         _tipoCreateDto.Descripcion = txtDescripcion.Text;
@@ -73,7 +73,7 @@ namespace BombonesApp2026.Windows
                     }
                     else
                     {
-                        if(_tipoUpdateDto is null)
+                        if (_tipoUpdateDto is null)
                         {
                             _tipoUpdateDto = new TipoBombonUpdateDto();
                         }
@@ -81,7 +81,7 @@ namespace BombonesApp2026.Windows
                         _tipoUpdateDto.Descripcion = txtDescripcion.Text;
                         _tipoUpdateDto.Activo = chkActivo.Checked;
 
-                        var resultadoEditar=_tipoBombonServicio
+                        var resultadoEditar = _tipoBombonServicio
                             .Editar(_tipoUpdateDto);
                         if (resultadoEditar.IsConcurrencyConflict)
                         {
@@ -98,7 +98,7 @@ namespace BombonesApp2026.Windows
                             ErrorHelper.MostrarErrores(resultadoEditar.Errors);
                             return;
                         }
-                        DataChanged=true;
+                        DataChanged = true;
                         MessageBox.Show("Registro editado satisfactoriamente",
                             "Mensaje",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -138,11 +138,16 @@ namespace BombonesApp2026.Windows
 
         public void SetTipo(TipoBombonUpdateDto? tipoEditDto)
         {
-            _tipoUpdateDto= tipoEditDto;
+            _tipoUpdateDto = tipoEditDto;
         }
         public TipoBombonUpdateDto? GetTipo()
         {
             return _tipoUpdateDto;
+        }
+
+        private void frmTipoDeBombonesAe_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

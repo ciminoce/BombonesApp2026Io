@@ -1,6 +1,5 @@
 ﻿using BombonesApp2026.Datos.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System.Linq.Expressions;
 
 namespace BombonesApp2026.Datos.Repositorios
@@ -40,13 +39,13 @@ namespace BombonesApp2026.Datos.Repositorios
             _dbSet.Entry(entidadEnDb).CurrentValues.SetValues(entidad);
         }
 
-        public (List<T> lista, int totalRegistros) ObtenerPagina(int pagina, 
-            int cantidad, Func<IQueryable<T>,IOrderedQueryable<T>> ordenarPor,
-            Expression<Func<T, bool>>? filtrarPor=null)
+        public (List<T> lista, int totalRegistros) ObtenerPagina(int pagina,
+            int cantidad, Func<IQueryable<T>, IOrderedQueryable<T>> ordenarPor,
+            Expression<Func<T, bool>>? filtrarPor = null)
         {
-            
+
             var query = Query();//_dbSet.AsQueryable();
-            if(filtrarPor is not null)
+            if (filtrarPor is not null)
             {
                 query = query.Where(filtrarPor);
             }
@@ -55,7 +54,7 @@ namespace BombonesApp2026.Datos.Repositorios
                 .Skip((pagina - 1) * cantidad)
                 .Take(cantidad)
                 .ToList();
-            return (listaPaginada, cantidadRegistros);  
+            return (listaPaginada, cantidadRegistros);
         }
 
         public virtual T? ObtenerPorId(int id)
@@ -72,7 +71,7 @@ namespace BombonesApp2026.Datos.Repositorios
         public IQueryable<T> Query()
         {
             return _dbSet.AsNoTracking();
-                
+
         }
     }
 }

@@ -3,15 +3,29 @@ using BombonesApp2026.Servicios.DTOs.Cliente;
 
 namespace BombonesApp2026.Servicios.Mapeadores
 {
+    //TODO:Hacerlo con métodos de extensión
     public static class ClienteMapper
     {
+        public static ClienteDetailsDto ToDetailsDto(Cliente cliente)
+        {
+            return new ClienteDetailsDto
+            {
+                ClienteId = cliente.ClienteId,
+                NombreCompleto = $"{cliente.Nombre} {cliente.Apellido}",
+                Direccion = $"{cliente.Calle} {cliente.Numero}" +
+                $" - ({cliente.CodigoPostal}) {cliente.Localidad}" +
+                $" {cliente.Provincia}",
+                Telefono = cliente.Telefono,
+                Email = cliente.Email,
+                Activo = cliente.Activo
+            };
+        }
         public static ClienteListDto ToListDto(Cliente cliente)
         {
             return new ClienteListDto
             {
                 ClienteId = cliente.ClienteId,
                 NombreCompleto = $"{cliente.Nombre} {cliente.Apellido}",
-                Documento = cliente.Documento,
                 Telefono = cliente.Telefono,
                 Email = cliente.Email,
                 Activo = cliente.Activo
@@ -52,5 +66,6 @@ namespace BombonesApp2026.Servicios.Mapeadores
                 RowVersion = clienteDto.RowVersion
             };
         }
+
     }
 }

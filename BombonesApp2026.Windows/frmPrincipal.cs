@@ -46,5 +46,15 @@ namespace BombonesApp2026.Windows
             }
 
         }
+
+        private void btnClientes_Click(object sender, EventArgs e)
+        {
+            using (var frm = _serviceProvider.GetRequiredService<frmClientes>())
+            {
+                frm.Text = "Lista de Clientes";
+                frm.ShowDialog();
+            }
+
+        }
     }
 }

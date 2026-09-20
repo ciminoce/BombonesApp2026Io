@@ -10,6 +10,7 @@ namespace BombonesApp2026.Datos.EntityTypeConfiguration
         {
             builder.ToTable("Clientes");
             builder.HasKey(c => c.ClienteId);
+
             //Relacionar luego con las ventas!!!
         }
     }

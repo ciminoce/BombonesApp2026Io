@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             toolStrip1 = new ToolStrip();
             tsbNuevo = new ToolStripButton();
             tsbBorrar = new ToolStripButton();
@@ -55,6 +55,8 @@
             lblCantidad = new Label();
             label2 = new Label();
             label1 = new Label();
+            tsbDetalles = new ToolStripButton();
+            toolStripSeparator3 = new ToolStripSeparator();
             toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -65,7 +67,7 @@
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbNuevo, tsbBorrar, tsbEditar, toolStripSeparator1, tsbFiltrar, tsbActualizar, toolStripSeparator2, tsbCerrar });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbNuevo, tsbBorrar, tsbEditar, toolStripSeparator1, tsbDetalles, toolStripSeparator3, tsbFiltrar, tsbActualizar, toolStripSeparator2, tsbCerrar });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(800, 70);
@@ -81,6 +83,7 @@
             tsbNuevo.Size = new Size(52, 67);
             tsbNuevo.Text = "&Nuevo";
             tsbNuevo.TextImageRelation = TextImageRelation.ImageAboveText;
+            tsbNuevo.Click += tsbNuevo_Click;
             // 
             // tsbBorrar
             // 
@@ -91,6 +94,7 @@
             tsbBorrar.Size = new Size(52, 67);
             tsbBorrar.Text = "&Borrar";
             tsbBorrar.TextImageRelation = TextImageRelation.ImageAboveText;
+            tsbBorrar.Click += tsbBorrar_Click;
             // 
             // tsbEditar
             // 
@@ -101,6 +105,7 @@
             tsbEditar.Size = new Size(52, 67);
             tsbEditar.Text = "&Editar";
             tsbEditar.TextImageRelation = TextImageRelation.ImageAboveText;
+            tsbEditar.Click += tsbEditar_Click;
             // 
             // toolStripSeparator1
             // 
@@ -123,12 +128,14 @@
             activosToolStripMenuItem.Name = "activosToolStripMenuItem";
             activosToolStripMenuItem.Size = new Size(132, 22);
             activosToolStripMenuItem.Text = "Activos";
+            activosToolStripMenuItem.Click += activosToolStripMenuItem_Click;
             // 
             // noActivosToolStripMenuItem
             // 
             noActivosToolStripMenuItem.Name = "noActivosToolStripMenuItem";
             noActivosToolStripMenuItem.Size = new Size(132, 22);
             noActivosToolStripMenuItem.Text = "No Activos";
+            noActivosToolStripMenuItem.Click += noActivosToolStripMenuItem_Click;
             // 
             // tsbActualizar
             // 
@@ -139,6 +146,7 @@
             tsbActualizar.Size = new Size(63, 67);
             tsbActualizar.Text = "&Actualizar";
             tsbActualizar.TextImageRelation = TextImageRelation.ImageAboveText;
+            tsbActualizar.Click += tsbActualizar_Click;
             // 
             // toolStripSeparator2
             // 
@@ -154,6 +162,7 @@
             tsbCerrar.Size = new Size(52, 67);
             tsbCerrar.Text = "&Cerrar";
             tsbCerrar.TextImageRelation = TextImageRelation.ImageAboveText;
+            tsbCerrar.Click += tsbCerrar_Click;
             // 
             // splitContainer1
             // 
@@ -184,8 +193,8 @@
             // 
             dgvDatos.AllowUserToAddRows = false;
             dgvDatos.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle1.BackColor = Color.FromArgb(224, 224, 224);
-            dgvDatos.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.BackColor = Color.FromArgb(224, 224, 224);
+            dgvDatos.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle2;
             dgvDatos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvDatos.Columns.AddRange(new DataGridViewColumn[] { colId, colNombre, colTelefono, colEmail, colActivo });
             dgvDatos.Dock = DockStyle.Fill;
@@ -199,6 +208,7 @@
             // 
             // colId
             // 
+            colId.DataPropertyName = "ClienteId";
             colId.HeaderText = "Id";
             colId.Name = "colId";
             colId.ReadOnly = true;
@@ -207,6 +217,7 @@
             // colNombre
             // 
             colNombre.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            colNombre.DataPropertyName = "NombreCompleto";
             colNombre.HeaderText = "Cliente";
             colNombre.Name = "colNombre";
             colNombre.ReadOnly = true;
@@ -214,18 +225,21 @@
             // colTelefono
             // 
             colTelefono.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            colTelefono.DataPropertyName = "Telefono";
             colTelefono.HeaderText = "Teléfono";
             colTelefono.Name = "colTelefono";
             colTelefono.ReadOnly = true;
             // 
             // colEmail
             // 
+            colEmail.DataPropertyName = "Email";
             colEmail.HeaderText = "Email";
             colEmail.Name = "colEmail";
             colEmail.ReadOnly = true;
             // 
             // colActivo
             // 
+            colActivo.DataPropertyName = "Activo";
             colActivo.HeaderText = "Activo";
             colActivo.Name = "colActivo";
             colActivo.ReadOnly = true;
@@ -238,6 +252,7 @@
             btnUltimo.Size = new Size(41, 38);
             btnUltimo.TabIndex = 7;
             btnUltimo.UseVisualStyleBackColor = true;
+            btnUltimo.Click += btnUltimo_Click;
             // 
             // btnSiguiente
             // 
@@ -247,6 +262,7 @@
             btnSiguiente.Size = new Size(41, 38);
             btnSiguiente.TabIndex = 8;
             btnSiguiente.UseVisualStyleBackColor = true;
+            btnSiguiente.Click += btnSiguiente_Click;
             // 
             // btnAnterior
             // 
@@ -256,6 +272,7 @@
             btnAnterior.Size = new Size(41, 38);
             btnAnterior.TabIndex = 9;
             btnAnterior.UseVisualStyleBackColor = true;
+            btnAnterior.Click += btnAnterior_Click;
             // 
             // btnPrimero
             // 
@@ -265,6 +282,7 @@
             btnPrimero.Size = new Size(41, 38);
             btnPrimero.TabIndex = 10;
             btnPrimero.UseVisualStyleBackColor = true;
+            btnPrimero.Click += btnPrimero_Click;
             // 
             // lblPaginas
             // 
@@ -304,6 +322,21 @@
             label1.TabIndex = 4;
             label1.Text = "Cantidad de Registros:";
             // 
+            // tsbDetalles
+            // 
+            tsbDetalles.Image = Properties.Resources.details_48px;
+            tsbDetalles.ImageScaling = ToolStripItemImageScaling.None;
+            tsbDetalles.ImageTransparentColor = Color.Magenta;
+            tsbDetalles.Name = "tsbDetalles";
+            tsbDetalles.Size = new Size(52, 67);
+            tsbDetalles.Text = "&Detalles";
+            tsbDetalles.TextImageRelation = TextImageRelation.ImageAboveText;
+            // 
+            // toolStripSeparator3
+            // 
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new Size(6, 70);
+            // 
             // frmClientes
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -314,6 +347,7 @@
             Name = "frmClientes";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "frmClientes";
+            Load += frmClientes_Load;
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
             splitContainer1.Panel1.ResumeLayout(false);
@@ -341,11 +375,6 @@
         private ToolStripDropDownButton tsbFiltrar;
         private ToolStripMenuItem activosToolStripMenuItem;
         private ToolStripMenuItem noActivosToolStripMenuItem;
-        private DataGridViewTextBoxColumn colId;
-        private DataGridViewTextBoxColumn colNombre;
-        private DataGridViewTextBoxColumn colTelefono;
-        private DataGridViewTextBoxColumn colEmail;
-        private DataGridViewCheckBoxColumn colActivo;
         private Button btnUltimo;
         private Button btnSiguiente;
         private Button btnAnterior;
@@ -354,5 +383,12 @@
         private Label lblCantidad;
         private Label label2;
         private Label label1;
+        private DataGridViewTextBoxColumn colId;
+        private DataGridViewTextBoxColumn colNombre;
+        private DataGridViewTextBoxColumn colTelefono;
+        private DataGridViewTextBoxColumn colEmail;
+        private DataGridViewCheckBoxColumn colActivo;
+        private ToolStripButton tsbDetalles;
+        private ToolStripSeparator toolStripSeparator3;
     }
 }

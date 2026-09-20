@@ -5,6 +5,7 @@ using BombonesApp2026.Servicios.DTOs.Cliente;
 using BombonesApp2026.Servicios.Intefaces;
 using BombonesApp2026.Servicios.Mapeadores;
 using FluentValidation;
+using System.Linq.Expressions;
 
 namespace BombonesApp2026.Servicios.Servicios
 {
@@ -24,14 +25,14 @@ namespace BombonesApp2026.Servicios.Servicios
             _updateValidator = updateValidator;
         }
 
-        public Result Agregar(ClienteCreateDto clienteDto)
+        public Result<int> Agregar(ClienteCreateDto clienteDto)
         {
             // 1. Validar el DTO directamente
             var validationResult = _createValidator.Validate(clienteDto);
             if (!validationResult.IsValid)
             {
                 var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-                return Result.Failure(errors);
+                return Result<int>.Failure(errors);
             }
 
             // 2. Mapear a entidad
@@ -40,19 +41,19 @@ namespace BombonesApp2026.Servicios.Servicios
             // 3. Regla de negocio
             if (_unitOfWork.Clientes.Existe(cliente))
             {
-                return Result.Failure("El cliente ya existe.");
+                return Result<int>.Failure("El cliente ya existe.");
             }
 
             try
             {
                 _unitOfWork.Clientes.Agregar(cliente);
                 _unitOfWork.Save();
-                return Result.Success();
+                return Result<int>.Success(cliente.ClienteId);
             }
             catch (Exception ex)
             {
                 _unitOfWork.RollBack();
-                return Result.Failure($"Error al intentar agregar el cliente: {ex.Message}");
+                return Result<int>.Failure($"Error al intentar agregar el cliente: {ex.Message}");
             }
         }
 
@@ -136,7 +137,6 @@ namespace BombonesApp2026.Servicios.Servicios
                 {
                     ClienteId = c.ClienteId,
                     NombreCompleto = $"{c.Nombre} {c.Apellido}",
-                    Documento = c.Documento,
                     Telefono = c.Telefono,
                     Email = c.Email,
                     Activo = c.Activo
@@ -164,7 +164,6 @@ namespace BombonesApp2026.Servicios.Servicios
                 {
                     ClienteId = cliente.ClienteId,
                     NombreCompleto = $"{cliente.Nombre} {cliente.Apellido}",
-                    Documento = cliente.Documento,
                     Telefono = cliente.Telefono,
                     Email = cliente.Email,
                     Activo = cliente.Activo
@@ -212,5 +211,46 @@ namespace BombonesApp2026.Servicios.Servicios
                 return Result<ClienteUpdateDto>.Failure(ex.Message);
             }
         }
+        public Result<ResultadoPaginacionDto<ClienteListDto>> ObtenerPaginado(
+                int pagina,
+                int cantidad,
+                string campoOrden,
+                bool esAscendente,
+                bool? filtroActivo = null)
+        {
+            try
+            {
+                Expression<Func<Cliente, bool>>? filtrarPor = null;
+                if (filtroActivo is not null)
+                {
+                    filtrarPor = c => c.Activo == filtroActivo;
+                }
+
+                Func<IQueryable<Cliente>, IOrderedQueryable<Cliente>>? ordenarPor = campoOrden switch
+                {
+                    "TipoBombonId" => q => esAscendente ? q.OrderBy(c => c.ClienteId) : q.OrderByDescending(c => c.ClienteId),
+                    _ => q => esAscendente ? q.OrderBy(c => c.Nombre) : q.OrderByDescending(c => c.Nombre),
+                };
+
+                var resultado = _unitOfWork.Clientes.ObtenerPagina(pagina, cantidad, ordenarPor, filtrarPor);
+                var listaDto = resultado.lista
+                    .Select(c => ClienteMapper.ToListDto(c)).ToList();
+
+                var resultadoPaginado = new ResultadoPaginacionDto<ClienteListDto>()
+                {
+                    Items = listaDto,
+                    CantidadRegistros = resultado.totalRegistros,
+                    CantidadPorPagina = cantidad,
+                    PaginaActual = pagina
+                };
+
+                return Result<ResultadoPaginacionDto<ClienteListDto>>.Success(resultadoPaginado);
+            }
+            catch (Exception ex)
+            {
+                return Result<ResultadoPaginacionDto<ClienteListDto>>.Failure($"Error al intentar paginar: {ex.Message}");
+            }
+        }
+
     }
 }

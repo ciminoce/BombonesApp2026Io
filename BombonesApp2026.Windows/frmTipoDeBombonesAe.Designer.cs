@@ -131,6 +131,7 @@
             Name = "frmTipoDeBombonesAe";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "frmTipoDeBombonAe";
+            Load += frmTipoDeBombonesAe_Load;
             ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
             ResumeLayout(false);
             PerformLayout();
