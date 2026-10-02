@@ -60,6 +60,7 @@
             colPrecio = new DataGridViewTextBoxColumn();
             colStock = new DataGridViewTextBoxColumn();
             colCantidadBombones = new DataGridViewTextBoxColumn();
+            colEsSurtida = new DataGridViewCheckBoxColumn();
             colActivo = new DataGridViewCheckBoxColumn();
             toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
@@ -164,7 +165,7 @@
             tsbBuscar.ImageScaling = ToolStripItemImageScaling.None;
             tsbBuscar.ImageTransparentColor = Color.Magenta;
             tsbBuscar.Name = "tsbBuscar";
-            tsbBuscar.Size = new Size(52, 67);
+            tsbBuscar.Size = new Size(46, 67);
             tsbBuscar.Text = "B&uscar";
             tsbBuscar.TextImageRelation = TextImageRelation.ImageAboveText;
             // 
@@ -225,7 +226,7 @@
             dataGridViewCellStyle1.BackColor = Color.FromArgb(224, 224, 224);
             dgvDatos.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             dgvDatos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvDatos.Columns.AddRange(new DataGridViewColumn[] { colId, colNombre, colPrecio, colStock, colCantidadBombones, colActivo });
+            dgvDatos.Columns.AddRange(new DataGridViewColumn[] { colId, colNombre, colPrecio, colStock, colCantidadBombones, colEsSurtida, colActivo });
             dgvDatos.Dock = DockStyle.Fill;
             dgvDatos.Location = new Point(0, 0);
             dgvDatos.MultiSelect = false;
@@ -343,6 +344,12 @@
             colCantidadBombones.Name = "colCantidadBombones";
             colCantidadBombones.ReadOnly = true;
             // 
+            // colEsSurtida
+            // 
+            colEsSurtida.HeaderText = "Surtida";
+            colEsSurtida.Name = "colEsSurtida";
+            colEsSurtida.ReadOnly = true;
+            // 
             // colActivo
             // 
             colActivo.HeaderText = "Activo";
@@ -404,6 +411,7 @@
         private DataGridViewTextBoxColumn colPrecio;
         private DataGridViewTextBoxColumn colStock;
         private DataGridViewTextBoxColumn colCantidadBombones;
+        private DataGridViewCheckBoxColumn colEsSurtida;
         private DataGridViewCheckBoxColumn colActivo;
     }
 }
