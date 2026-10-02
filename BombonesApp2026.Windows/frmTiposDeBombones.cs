@@ -2,8 +2,8 @@
 using BombonesApp2026.Servicios.DTOs.TipoBombon;
 using BombonesApp2026.Servicios.Intefaces;
 using BombonesApp2026.Windows.Helpers;
+using BombonesApp2026.Windows.Helpers.BombonesApp2026.Windows.Helpers;
 using Microsoft.Extensions.DependencyInjection;
-using System.Runtime.CompilerServices;
 
 namespace BombonesApp2026.Windows
 {
@@ -27,7 +27,7 @@ namespace BombonesApp2026.Windows
         {
             InitializeComponent();
             _serviceProvider = provider;
-            dgvDatos.DataSource= _bindingSource;
+            dgvDatos.DataSource = _bindingSource;
         }
 
         private void tsbCerrar_Click(object sender, EventArgs e)
@@ -46,18 +46,59 @@ namespace BombonesApp2026.Windows
             {
                 var tipoBombonesServicio = scope.ServiceProvider
                     .GetRequiredService<ITipoBombonServicio>();
+
                 try
                 {
+                    int paginaSolicitada = _estado.PaginaActual;
+
                     var resultadoConsulta = tipoBombonesServicio
-                        .ObtenerPagina(_estado.PaginaActual, _estado.RegistrosPorPagina,
-                        campoOrdenar, esAscendente, filtroActivo);
+                        .ObtenerPagina(
+                            paginaSolicitada,
+                            _estado.RegistrosPorPagina,
+                            campoOrdenar,
+                            esAscendente,
+                            filtroActivo);
+
                     if (resultadoConsulta.IsFailure)
                     {
                         ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
                         return;
                     }
 
-                    ActualizarVista(resultadoConsulta.Value!);
+                    var resultado = resultadoConsulta.Value!;
+
+                    _estado.Actualizar(resultado.CantidadRegistros);
+
+                    if (_estado.PaginaActual != paginaSolicitada)
+                    {
+                        resultadoConsulta = tipoBombonesServicio
+                            .ObtenerPagina(
+                                _estado.PaginaActual,
+                                _estado.RegistrosPorPagina,
+                                campoOrdenar,
+                                esAscendente,
+                                filtroActivo);
+
+                        if (resultadoConsulta.IsFailure)
+                        {
+                            ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
+                            return;
+                        }
+
+                        resultado = resultadoConsulta.Value!;
+
+                        _estado.Actualizar(resultado.CantidadRegistros);
+                    }
+
+                    _bindingSource.DataSource = resultado.Items;
+
+                    lblCantidad.Text = _estado.TextoRegistros();
+                    lblPaginas.Text = _estado.TextoPaginas();
+
+                    btnPrimero.Enabled = _estado.PuedeIrAnterior();
+                    btnAnterior.Enabled = _estado.PuedeIrAnterior();
+                    btnSiguiente.Enabled = _estado.PuedeIrSiguiente();
+                    btnUltimo.Enabled = _estado.PuedeIrSiguiente();
                 }
                 catch (Exception ex)
                 {
@@ -65,7 +106,6 @@ namespace BombonesApp2026.Windows
                 }
             }
         }
-
         private void ActualizarVista(ResultadoPaginacionDto<TipoBombonListDto> resultado)
         {
             _estado.Actualizar(resultado.CantidadRegistros);
@@ -121,7 +161,7 @@ namespace BombonesApp2026.Windows
 
         private void tsbBorrar_Click(object sender, EventArgs e)
         {
-            if (_bindingSource.Current==null)
+            if (_bindingSource.Current == null)
             {
                 _servicioMensajes.Advertencia("Debe seleccionar una fila");
                 return;
@@ -159,11 +199,6 @@ namespace BombonesApp2026.Windows
                     }
                     _servicioMensajes.Informacion("Registro eliminado satisfactoriamente");
                     RecargarGrilla();
-                    if (_estado.PaginaActual>_estado.TotalPaginas && _estado.TotalPaginas>=1)
-                    {
-                        _estado.PaginaActual = _estado.TotalPaginas;
-                        RecargarGrilla();
-                    }
                 }
                 catch (Exception ex)
                 {
@@ -219,7 +254,7 @@ namespace BombonesApp2026.Windows
 
         private void tsbEditar_Click(object sender, EventArgs e)
         {
-            if (_bindingSource.Current==null)
+            if (_bindingSource.Current == null)
             {
                 MessageBox.Show("Debe seleccionar una fila de la grilla",
                     "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -323,6 +358,11 @@ namespace BombonesApp2026.Windows
         {
             _estado.UltimaPagina();
             RecargarGrilla();
+        }
+
+        private void tsbBuscar_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

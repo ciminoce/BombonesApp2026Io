@@ -13,6 +13,7 @@ namespace BombonesApp2026.Datos.Interfaces
         (List<T> lista, int totalRegistros) ObtenerPagina(int pagina,
             int cantidad,
             Func<IQueryable<T>, IOrderedQueryable<T>> ordenarPor,
-            Expression<Func<T, bool>>? filtrarPor=null);
+            Expression<Func<T, bool>>? filtrarPor=null,
+            Func<IQueryable<T>, IQueryable<T>>? incluir = null);
     }
 }

@@ -19,13 +19,16 @@
                 _cantidadBombones = value;
             }
         }
-
+        public Caja()
+        {
+            
+        }
         public Caja(
             string nombre,
             decimal precio,
             int stock,
             int cantidadBombones,
-            bool esSurtida) : base(nombre, precio, stock)
+            bool esSurtida,string? descripcion) : base(nombre, precio, stock, descripcion)
         {
             // Se utiliza la propiedad para ejecutar el 'setter' y su validación
             CantidadBombones = cantidadBombones;

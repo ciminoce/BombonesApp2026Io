@@ -7,6 +7,7 @@ namespace BombonesApp2026.Datos
         ITipoBombonRepositorio TipoBombones { get; }
         IClienteRepositorio Clientes { get; }
         IFormaDePagoRepositorio FormasDePago{ get; }
+        IBombonRepositorio Bombones { get; }
         void Save();
         void RollBack();
     }

@@ -56,5 +56,14 @@ namespace BombonesApp2026.Windows
             }
 
         }
+
+        private void btnBombones_Click(object sender, EventArgs e)
+        {
+            using (var frm=_serviceProvider.GetRequiredService<frmBombones>())
+            {
+                frm.Text = "Listado de Bombones";
+                frm.ShowDialog();
+            }
+        }
     }
 }

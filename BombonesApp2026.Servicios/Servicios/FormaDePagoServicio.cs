@@ -188,15 +188,14 @@ namespace BombonesApp2026.Servicios.Servicios
             int registros,
             string campoOrden,
             bool esAscendente,
-            bool? filtroActivo = null)
+            bool? filtroActivo = null,
+            string? textoBuscar = null)
         {
             try
             {
-                Expression<Func<FormaDePago, bool>>? filtradoPor = null;
-                if (filtroActivo is not null)
-                {
-                    filtradoPor = fp => fp.Activo == filtroActivo;
-                }
+                Expression<Func<FormaDePago, bool>>? filtro = fp =>
+                        (!filtroActivo.HasValue || fp.Activo == filtroActivo.Value) &&
+                        (string.IsNullOrWhiteSpace(textoBuscar) || fp.Nombre.Contains(textoBuscar));
 
                 Func<IQueryable<FormaDePago>, IOrderedQueryable<FormaDePago>>? ordenarPor = campoOrden switch
                 {
@@ -204,7 +203,7 @@ namespace BombonesApp2026.Servicios.Servicios
                     _ => q => esAscendente ? q.OrderBy(fp => fp.Nombre) : q.OrderByDescending(fp => fp.Nombre)
                 };
 
-                var resultado = _unitOfWork.FormasDePago.ObtenerPagina(pagina, registros, ordenarPor, filtradoPor);
+                var resultado = _unitOfWork.FormasDePago.ObtenerPagina(pagina, registros, ordenarPor, filtro);
                 var listaDto = resultado.lista.Select(FormaDePagoMapper.ToListDto).ToList();
 
                 var resultadoPaginacion = new ResultadoPaginacionDto<FormaDePagoListDto>

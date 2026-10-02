@@ -216,15 +216,15 @@ namespace BombonesApp2026.Servicios.Servicios
                 int cantidad,
                 string campoOrden,
                 bool esAscendente,
-                bool? filtroActivo = null)
+                bool? filtroActivo = null,
+                string? textoBuscar = null)
         {
             try
             {
-                Expression<Func<Cliente, bool>>? filtrarPor = null;
-                if (filtroActivo is not null)
-                {
-                    filtrarPor = c => c.Activo == filtroActivo;
-                }
+                Expression<Func<Cliente, bool>>? filtro = c =>
+                        (!filtroActivo.HasValue || c.Activo == filtroActivo.Value) &&
+                        (string.IsNullOrWhiteSpace(textoBuscar) || c.Nombre.Contains(textoBuscar));
+
 
                 Func<IQueryable<Cliente>, IOrderedQueryable<Cliente>>? ordenarPor = campoOrden switch
                 {
@@ -232,7 +232,7 @@ namespace BombonesApp2026.Servicios.Servicios
                     _ => q => esAscendente ? q.OrderBy(c => c.Nombre) : q.OrderByDescending(c => c.Nombre),
                 };
 
-                var resultado = _unitOfWork.Clientes.ObtenerPagina(pagina, cantidad, ordenarPor, filtrarPor);
+                var resultado = _unitOfWork.Clientes.ObtenerPagina(pagina, cantidad, ordenarPor, filtro);
                 var listaDto = resultado.lista
                     .Select(c => ClienteMapper.ToListDto(c)).ToList();
 

@@ -8,6 +8,8 @@ namespace BombonesApp2026.Datos
         public DbSet<TipoBombon> TipoBombones { get; set; }
         public DbSet<FormaDePago> FormasDePago { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
+        public DbSet<Producto> Productos { get; set; }
+        public DbSet<Bombon> Bombones  { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=BombonesIo2026;Integrated Security=True;TrustServerCertificate=True");

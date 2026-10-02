@@ -1,4 +1,5 @@
-﻿using BombonesApp2026.Servicios.Common;
+﻿using BombonesApp2026.Entidades.Enums;
+using BombonesApp2026.Servicios.Common;
 using BombonesApp2026.Servicios.DTOs.TipoBombon;
 
 namespace BombonesApp2026.Servicios.Intefaces
@@ -16,8 +17,9 @@ namespace BombonesApp2026.Servicios.Intefaces
         Result<List<TipoBombonListDto>> FiltrarPorActivo(bool activo);
         Result<ResultadoPaginacionDto<TipoBombonListDto>> ObtenerPagina(int pagina,
             int cantidad, string campoOrdenar, bool esAscendente,
-            bool? filtroActivo=null);
+            bool? filtroActivo=null, string? textoBuscar = null);
         Result<int> ObtenerPaginaRegistro(int seleccionadoId, int cantidadPorPagina,
-            bool? filtroActivo=null);
+            bool? filtroActivo=null, string? textoBuscar = null);
+        Result<List<TipoBombonListDto>> ObtenerDatosCombo(TipoBombonDefault tipoDefault);
     }
 }

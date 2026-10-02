@@ -1,5 +1,6 @@
 ﻿using BombonesApp2026.Datos;
 using BombonesApp2026.Entidades;
+using BombonesApp2026.Entidades.Enums;
 using BombonesApp2026.Servicios.Common;
 using BombonesApp2026.Servicios.DTOs.TipoBombon;
 using BombonesApp2026.Servicios.Intefaces;
@@ -11,8 +12,6 @@ using System.Linq.Expressions;
 
 namespace BombonesApp2026.Servicios.Servicios
 {
-    //TODO: Agregar manejo de excepciones específicas para cada caso
-    //y evitar el manejo genérico de excepciones, además de agregar manejo de concurrencia para evitar problemas en escenarios con múltiples usuarios editando o eliminando el mismo registro al mismo tiempo
     public class TipoBombonServicio : ITipoBombonServicio
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -205,15 +204,14 @@ namespace BombonesApp2026.Servicios.Servicios
             int cantidad,
             string campoOrden,
             bool esAscendente,
-            bool? filtroActivo = null)
+            bool? filtroActivo = null,
+            string? textoBuscar = null)
         {
             try
             {
-                Expression<Func<TipoBombon, bool>>? filtrarPor = null;
-                if (filtroActivo is not null)
-                {
-                    filtrarPor = tb => tb.Activo == filtroActivo;
-                }
+                Expression<Func<TipoBombon, bool>>? filtro = b =>
+                        (!filtroActivo.HasValue || b.Activo == filtroActivo.Value) &&
+                        (string.IsNullOrWhiteSpace(textoBuscar) || b.Nombre.Contains(textoBuscar));
 
                 Func<IQueryable<TipoBombon>, IOrderedQueryable<TipoBombon>>? ordenarPor = campoOrden switch
                 {
@@ -221,7 +219,7 @@ namespace BombonesApp2026.Servicios.Servicios
                     _ => q => esAscendente ? q.OrderBy(tb => tb.Nombre) : q.OrderByDescending(tb => tb.Nombre),
                 };
 
-                var resultado = _unitOfWork.TipoBombones.ObtenerPagina(pagina, cantidad, ordenarPor, filtrarPor);
+                var resultado = _unitOfWork.TipoBombones.ObtenerPagina(pagina, cantidad, ordenarPor, filtro);
                 var listaDto = resultado.lista.Select(tb => TipoBombonMapper.ToListDto(tb)).ToList();
 
                 var resultadoPaginado = new ResultadoPaginacionDto<TipoBombonListDto>()
@@ -240,17 +238,17 @@ namespace BombonesApp2026.Servicios.Servicios
             }
         }
 
-        public Result<int> ObtenerPaginaRegistro(int seleccionadoId, int cantidadPorPagina, bool? filtroActivo = null)
+        public Result<int> ObtenerPaginaRegistro(int seleccionadoId, int cantidadPorPagina,
+            bool? filtroActivo = null, string? textoBuscar = null)
         {
             try
             {
-                Expression<Func<TipoBombon, bool>>? filtrarPor = null;
-                if (filtroActivo is not null)
-                {
-                    filtrarPor = tb => tb.Activo == filtroActivo;
-                }
+                Expression<Func<TipoBombon, bool>>? filtro = b =>
+                        (!filtroActivo.HasValue || b.Activo == filtroActivo.Value) &&
+                        (string.IsNullOrWhiteSpace(textoBuscar) || b.Nombre.Contains(textoBuscar));
 
-                var posicion = _unitOfWork.TipoBombones.ObtenerPosicionRegistro(seleccionadoId, filtrarPor);
+
+                var posicion = _unitOfWork.TipoBombones.ObtenerPosicionRegistro(seleccionadoId, filtro);
                 var pagina = (int)Math.Ceiling((double)posicion / cantidadPorPagina);
                 return Result<int>.Success(pagina);
             }
@@ -259,5 +257,33 @@ namespace BombonesApp2026.Servicios.Servicios
                 return Result<int>.Failure($"Error al intentar obtener la página: {ex.Message}");
             }
         }
+
+        public Result<List<TipoBombonListDto>> ObtenerDatosCombo(TipoBombonDefault tipoDefault)
+        {
+            var lista = _unitOfWork.TipoBombones.ObtenerTodos()
+                .Select(tp => TipoBombonMapper.ToListDto(tp)).ToList();
+            if (tipoDefault == TipoBombonDefault.Todos)
+            {
+                var defaultTipo = new TipoBombonListDto
+                {
+                    TipoBombonId = 0,
+                    Nombre = "Todos"
+                };
+                lista.Insert(0, defaultTipo);
+
+            }
+            else
+            {
+                var defaultTipo = new TipoBombonListDto
+                {
+                    TipoBombonId = 0,
+                    Nombre = "Seleccione"
+                };
+                lista.Insert(0, defaultTipo);
+            }
+            return Result<List<TipoBombonListDto>>.Success(lista);
+        }
+
+
     }
 }

@@ -184,6 +184,7 @@
             btnBombones.TabIndex = 0;
             btnBombones.Text = "Bombones";
             btnBombones.UseVisualStyleBackColor = true;
+            btnBombones.Click += btnBombones_Click;
             // 
             // btnTiposBombones
             // 

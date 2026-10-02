@@ -34,17 +34,22 @@ namespace BombonesApp2026.Datos.Repositorios
             var entidadEnDb = _dbSet.Find(id);
             if (entidadEnDb is null)
             {
-                throw new KeyNotFoundException($"No se pudo borrar la entidad ID: {id} de la tabla {typeof(T).Name}");
+                throw new KeyNotFoundException($"No se pudo editar la entidad ID: {id} de la tabla {typeof(T).Name}");
             }
             _dbSet.Entry(entidadEnDb).CurrentValues.SetValues(entidad);
         }
-
+        //TODO Explicar el ultimo parámetro de la función ObtenerPagina
         public (List<T> lista, int totalRegistros) ObtenerPagina(int pagina,
             int cantidad, Func<IQueryable<T>, IOrderedQueryable<T>> ordenarPor,
-            Expression<Func<T, bool>>? filtrarPor = null)
+            Expression<Func<T, bool>>? filtrarPor = null,
+            Func<IQueryable<T>,IQueryable<T>>? incluir=null)
         {
 
             var query = Query();//_dbSet.AsQueryable();
+            if(incluir is not null)
+            {
+                query = incluir(query);
+            }
             if (filtrarPor is not null)
             {
                 query = query.Where(filtrarPor);
@@ -61,8 +66,8 @@ namespace BombonesApp2026.Datos.Repositorios
         {
             return _dbSet.Find(id);
         }
-
-        public List<T> ObtenerTodos()
+        //TODO:Explicar por qué se puso Virtual en el método ObtenerTodos
+        public virtual List<T> ObtenerTodos()
         {
             return _dbSet
                 .AsNoTracking()

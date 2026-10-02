@@ -1,7 +1,7 @@
 ﻿using BombonesApp2026.Datos;
 using BombonesApp2026.Datos.Interfaces;
 using BombonesApp2026.Datos.Repositorios;
-using BombonesApp2026.Entidades;
+using BombonesApp2026.Servicios.DTOs.Bombon;
 using BombonesApp2026.Servicios.DTOs.Cliente;
 using BombonesApp2026.Servicios.DTOs.FormaDePago;
 using BombonesApp2026.Servicios.DTOs.TipoBombon;
@@ -34,6 +34,12 @@ namespace BombonesApp2026.Ioc
             services.AddScoped<IClienteServicio, ClienteServicio>();
             services.AddScoped<IValidator<ClienteCreateDto>, ClienteCreateDtoValidator>();
             services.AddScoped<IValidator<ClienteUpdateDto>, ClienteUpdateDtoValidator>();
+
+            services.AddScoped<IBombonRepositorio, BombonRepositorio>();
+            services.AddScoped<IBombonServicio, BombonServicio>();
+            services.AddScoped<IValidator<BombonCreateDto>, BombonCreateDtoValidator>();
+            services.AddScoped<IValidator<BombonUpdateDto>, BombonUpdateDtoValidator>();
+
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

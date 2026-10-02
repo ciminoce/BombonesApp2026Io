@@ -37,13 +37,16 @@
         }
 
         public bool TieneAzucar { get; set; }
-
+        public Bombon()
+        {
+            
+        }
         public Bombon(
             string nombre,
             decimal precio,
             int stock,
             int pesoEnGramos,
-            bool tieneAzucar) : base(nombre, precio, stock)
+            bool tieneAzucar,string? descripcion) : base(nombre, precio, stock, descripcion)
         {
             // Invoca el setter de la propiedad con sus respectivas validaciones
             PesoEnGramos = pesoEnGramos;

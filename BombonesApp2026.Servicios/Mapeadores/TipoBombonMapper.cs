@@ -5,6 +5,7 @@ namespace BombonesApp2026.Servicios.Mapeadores
 {
     public static class TipoBombonMapper
     {
+
         public static TipoBombonListDto ToListDto(TipoBombon tipoBombon)
         {
             return new TipoBombonListDto

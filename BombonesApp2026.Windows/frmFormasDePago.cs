@@ -1,7 +1,9 @@
 ﻿using BombonesApp2026.Servicios.Common;
+using BombonesApp2026.Servicios.DTOs.Cliente;
 using BombonesApp2026.Servicios.DTOs.FormaDePago;
 using BombonesApp2026.Servicios.Intefaces;
 using BombonesApp2026.Windows.Helpers;
+using BombonesApp2026.Windows.Helpers.BombonesApp2026.Windows.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BombonesApp2026.Windows
@@ -24,7 +26,7 @@ namespace BombonesApp2026.Windows
         {
             InitializeComponent();
             _serviceProvider = serviceProvider;
-            dgvDatos.DataSource= _bindingSource;
+            dgvDatos.DataSource = _bindingSource;
         }
 
         private void tsbCerrar_Click(object sender, EventArgs e)
@@ -141,46 +143,70 @@ namespace BombonesApp2026.Windows
             {
                 var formaDePagoServicio = scope.ServiceProvider
                     .GetRequiredService<IFormaDePagoServicio>();
+
                 try
                 {
+                    int paginaSolicitada = _estado.PaginaActual;
+
                     var resultadoConsulta = formaDePagoServicio
-                        .ObtenerPaginado(_estado.PaginaActual, _estado.RegistrosPorPagina,
-                        campoOrdenar, esAscendente, filtroActivo);
+                        .ObtenerPaginado(
+                            paginaSolicitada,
+                            _estado.RegistrosPorPagina,
+                            campoOrdenar,
+                            esAscendente,
+                            filtroActivo);
+
                     if (resultadoConsulta.IsFailure)
                     {
                         ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
                         return;
                     }
 
-                    MostrarDatosEnGrilla(resultadoConsulta.Value!);
+                    var resultado = resultadoConsulta.Value!;
+
+                    _estado.Actualizar(resultado.CantidadRegistros);
+
+                    if (_estado.PaginaActual != paginaSolicitada)
+                    {
+                        resultadoConsulta = formaDePagoServicio
+                            .ObtenerPaginado(
+                                _estado.PaginaActual,
+                                _estado.RegistrosPorPagina,
+                                campoOrdenar,
+                                esAscendente,
+                                filtroActivo);
+
+                        if (resultadoConsulta.IsFailure)
+                        {
+                            ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
+                            return;
+                        }
+
+                        resultado = resultadoConsulta.Value!;
+
+                        _estado.Actualizar(resultado.CantidadRegistros);
+                    }
+
+                    _bindingSource.DataSource = resultado.Items;
+
+                    lblCantidad.Text = _estado.TextoRegistros();
+                    lblPaginas.Text = _estado.TextoPaginas();
+
+                    btnPrimero.Enabled = _estado.PuedeIrAnterior();
+                    btnAnterior.Enabled = _estado.PuedeIrAnterior();
+                    btnSiguiente.Enabled = _estado.PuedeIrSiguiente();
+                    btnUltimo.Enabled = _estado.PuedeIrSiguiente();
                 }
                 catch (Exception ex)
                 {
-
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        ex.Message,
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
                 }
             }
         }
-
-        private void MostrarDatosEnGrilla(ResultadoPaginacionDto<FormaDePagoListDto> resultado)
-        {
-            if (resultado.Items is null ||
-                resultado.Items.Count == 0) return;
-
-            _estado.Actualizar(resultado.CantidadRegistros);
-
-            _bindingSource.DataSource = resultado.Items;
-
-            lblCantidad.Text = _estado.TextoRegistros();
-            lblPaginas.Text = _estado.TextoPaginas();
-
-            btnPrimero.Enabled = _estado.PuedeIrAnterior();
-            btnAnterior.Enabled = _estado.PuedeIrAnterior();
-            btnSiguiente.Enabled = _estado.PuedeIrSiguiente();
-            btnUltimo.Enabled = _estado.PuedeIrSiguiente();
-
-        }
-
         private void frmFormasDePago_Load(object sender, EventArgs e)
         {
             RecargarGrilla();
@@ -235,6 +261,11 @@ namespace BombonesApp2026.Windows
         {
             _estado.UltimaPagina();
             RecargarGrilla();
+        }
+
+        private void tsbBuscar_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

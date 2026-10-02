@@ -11,15 +11,18 @@ namespace BombonesApp2026.Datos
         public IClienteRepositorio Clientes { get; }
 
         public IFormaDePagoRepositorio FormasDePago { get; }
+        public IBombonRepositorio Bombones { get; set; }
 
         public UnitOfWork(IFormaDePagoRepositorio formaDePagoRepositorio,
             IClienteRepositorio clienteRepositorio, 
             ITipoBombonRepositorio tipoBombonRepositorio,
+            IBombonRepositorio bombonRepositorio,
             BombonesDbContext context)
         {
             FormasDePago = formaDePagoRepositorio;
             Clientes = clienteRepositorio;
             TipoBombones = tipoBombonRepositorio;
+            Bombones = bombonRepositorio;
             _context = context;
         }
 

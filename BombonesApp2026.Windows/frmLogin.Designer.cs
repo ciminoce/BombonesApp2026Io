@@ -84,7 +84,7 @@
             txtClave.PasswordChar = '*';
             txtClave.Size = new Size(204, 23);
             txtClave.TabIndex = 1;
-            txtClave.Text = "1234";
+            txtClave.Text = "123456";
             // 
             // btnSalir
             // 

@@ -13,6 +13,7 @@ namespace BombonesApp2026.Servicios.Intefaces
         Result Borrar(int id);
         Result<List<FormaDePagoListDto>> FiltrarPorActivo(bool activo);
         Result<ResultadoPaginacionDto<FormaDePagoListDto>> ObtenerPaginado(int paginaActual,
-            int cantidadPorPagina, string campoOrdenar, bool esAscendente, bool? filtroActivo);
+            int cantidadPorPagina, string campoOrdenar, bool esAscendente, bool? filtroActivo,
+            string? textoBuscar = null);
     }
 }

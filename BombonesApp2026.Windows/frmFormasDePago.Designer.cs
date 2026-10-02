@@ -42,6 +42,9 @@
             tsbCerrar = new ToolStripButton();
             splitContainer1 = new SplitContainer();
             dgvDatos = new DataGridView();
+            colId = new DataGridViewTextBoxColumn();
+            colNombre = new DataGridViewTextBoxColumn();
+            colActivo = new DataGridViewCheckBoxColumn();
             btnUltimo = new Button();
             btnSiguiente = new Button();
             btnAnterior = new Button();
@@ -50,9 +53,9 @@
             lblCantidad = new Label();
             label2 = new Label();
             label1 = new Label();
-            colId = new DataGridViewTextBoxColumn();
-            colNombre = new DataGridViewTextBoxColumn();
-            colActivo = new DataGridViewCheckBoxColumn();
+            toolStripLabel1 = new ToolStripLabel();
+            txtBuscar = new ToolStripTextBox();
+            tsbBuscar = new ToolStripButton();
             toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -63,7 +66,7 @@
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbNuevo, tsbBorrar, tsbEditar, toolStripSeparator1, tsbFiltrar, tsbActualizar, toolStripSeparator2, tsbCerrar });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbNuevo, tsbBorrar, tsbEditar, toolStripSeparator1, tsbFiltrar, toolStripLabel1, txtBuscar, tsbBuscar, tsbActualizar, toolStripSeparator2, tsbCerrar });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(800, 70);
@@ -202,6 +205,29 @@
             dgvDatos.Size = new Size(800, 321);
             dgvDatos.TabIndex = 0;
             // 
+            // colId
+            // 
+            colId.DataPropertyName = "FormaDePagoId";
+            colId.HeaderText = "Id";
+            colId.Name = "colId";
+            colId.ReadOnly = true;
+            colId.Visible = false;
+            // 
+            // colNombre
+            // 
+            colNombre.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            colNombre.DataPropertyName = "Nombre";
+            colNombre.HeaderText = "Forma de Pago";
+            colNombre.Name = "colNombre";
+            colNombre.ReadOnly = true;
+            // 
+            // colActivo
+            // 
+            colActivo.DataPropertyName = "Activo";
+            colActivo.HeaderText = "Activo";
+            colActivo.Name = "colActivo";
+            colActivo.ReadOnly = true;
+            // 
             // btnUltimo
             // 
             btnUltimo.Image = Properties.Resources.last_24px;
@@ -280,28 +306,27 @@
             label1.TabIndex = 4;
             label1.Text = "Cantidad de Registros:";
             // 
-            // colId
+            // toolStripLabel1
             // 
-            colId.DataPropertyName = "FormaDePagoId";
-            colId.HeaderText = "Id";
-            colId.Name = "colId";
-            colId.ReadOnly = true;
-            colId.Visible = false;
+            toolStripLabel1.Name = "toolStripLabel1";
+            toolStripLabel1.Size = new Size(45, 67);
+            toolStripLabel1.Text = "Buscar:";
             // 
-            // colNombre
+            // txtBuscar
             // 
-            colNombre.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            colNombre.DataPropertyName = "Nombre";
-            colNombre.HeaderText = "Forma de Pago";
-            colNombre.Name = "colNombre";
-            colNombre.ReadOnly = true;
+            txtBuscar.Name = "txtBuscar";
+            txtBuscar.Size = new Size(150, 70);
             // 
-            // colActivo
+            // tsbBuscar
             // 
-            colActivo.DataPropertyName = "Activo";
-            colActivo.HeaderText = "Activo";
-            colActivo.Name = "colActivo";
-            colActivo.ReadOnly = true;
+            tsbBuscar.Image = Properties.Resources.search_property_48px;
+            tsbBuscar.ImageScaling = ToolStripItemImageScaling.None;
+            tsbBuscar.ImageTransparentColor = Color.Magenta;
+            tsbBuscar.Name = "tsbBuscar";
+            tsbBuscar.Size = new Size(52, 67);
+            tsbBuscar.Text = "B&uscar";
+            tsbBuscar.TextImageRelation = TextImageRelation.ImageAboveText;
+            tsbBuscar.Click += tsbBuscar_Click;
             // 
             // frmFormasDePago
             // 
@@ -352,5 +377,8 @@
         private DataGridViewTextBoxColumn colId;
         private DataGridViewTextBoxColumn colNombre;
         private DataGridViewCheckBoxColumn colActivo;
+        private ToolStripLabel toolStripLabel1;
+        private ToolStripTextBox txtBuscar;
+        private ToolStripButton tsbBuscar;
     }
 }

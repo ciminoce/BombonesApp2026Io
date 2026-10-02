@@ -1,6 +1,8 @@
-﻿namespace BombonesApp2026.Entidades
+﻿using BombonesApp2026.Entidades.Interfaces;
+
+namespace BombonesApp2026.Entidades
 {
-    public abstract class Producto
+    public abstract class Producto:IConcurrencyEntity
     {
         private string _nombre = null!;
         private string? _descripcion;
@@ -71,25 +73,21 @@
         }
 
         public bool Activo { get; set; } = true;
-
-        protected Producto(string nombre, decimal precio, int stock)
+        public byte[] RowVersion { get; set; } = null!;
+        protected Producto()
+        {
+            
+        }
+        protected Producto(string nombre, decimal precio, int stock,string? descripcion)
         {
             // Las asignaciones invocan los 'setters' correspondientes y sus validaciones
             Nombre = nombre;
             Precio = precio;
             Stock = stock;
+            Descripcion = descripcion;
         }
 
         public abstract string MostrarDatos();
 
-        public decimal PrecioConDescuento(decimal porcentaje)
-        {
-            if (porcentaje < 0 || porcentaje > 100)
-            {
-                throw new ArgumentOutOfRangeException(nameof(porcentaje), "El porcentaje de descuento debe estar entre 0 y 100.");
-            }
-
-            return Precio * (1 - porcentaje / 100m);
-        }
     }
 }
