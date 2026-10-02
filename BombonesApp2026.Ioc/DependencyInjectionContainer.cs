@@ -2,12 +2,16 @@
 using BombonesApp2026.Datos.Interfaces;
 using BombonesApp2026.Datos.Repositorios;
 using BombonesApp2026.Servicios.DTOs.Bombon;
+using BombonesApp2026.Servicios.DTOs.Caja;
 using BombonesApp2026.Servicios.DTOs.Cliente;
 using BombonesApp2026.Servicios.DTOs.FormaDePago;
 using BombonesApp2026.Servicios.DTOs.TipoBombon;
 using BombonesApp2026.Servicios.Intefaces;
 using BombonesApp2026.Servicios.Servicios;
 using BombonesApp2026.Servicios.Validators;
+using CajaesApp2026.Datos.Interfaces;
+using CajaesApp2026.Servicios.Intefaces;
+using CajasApp2026.Servicios.Servicios;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -38,7 +42,12 @@ namespace BombonesApp2026.Ioc
             services.AddScoped<IBombonRepositorio, BombonRepositorio>();
             services.AddScoped<IBombonServicio, BombonServicio>();
             services.AddScoped<IValidator<BombonCreateDto>, BombonCreateDtoValidator>();
-            services.AddScoped<IValidator<BombonUpdateDto>, BombonUpdateDtoValidator>();
+            services.AddScoped<IValidator<Servicios.DTOs.Bombon.BombonUpdateDto>, BombonUpdateDtoValidator>();
+
+            services.AddScoped<ICajaRepositorio, CajaRepositorio>();
+            services.AddScoped<ICajaServicio, CajaServicio>();
+            services.AddScoped<IValidator<CajaCreateDto>, CajaCreateDtoValidator>();
+            services.AddScoped<IValidator<Servicios.DTOs.Caja.CajaUpdateDto>, CajaUpdateDtoValidator>();
 
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();

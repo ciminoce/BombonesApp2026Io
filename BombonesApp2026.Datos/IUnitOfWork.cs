@@ -1,4 +1,5 @@
 ﻿using BombonesApp2026.Datos.Interfaces;
+using CajaesApp2026.Datos.Interfaces;
 
 namespace BombonesApp2026.Datos
 {
@@ -8,6 +9,7 @@ namespace BombonesApp2026.Datos
         IClienteRepositorio Clientes { get; }
         IFormaDePagoRepositorio FormasDePago{ get; }
         IBombonRepositorio Bombones { get; }
+        ICajaRepositorio Cajas { get; }
         void Save();
         void RollBack();
     }

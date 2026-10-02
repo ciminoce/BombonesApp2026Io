@@ -284,9 +284,9 @@ namespace BombonesApp2026.Windows
                         .GetRequiredService<frmBombonAe>())
                     {
                         frm.Text = "Editar Bombón";
-                        frm.SetTipo(bombonEditDto);
+                        frm.SetBombon(bombonEditDto);
                         frm.ShowDialog();
-                        var bombonEditado = frm.GetTipo();
+                        var bombonEditado = frm.GetBombon();
                         if (bombonEditado is null) return;
                         bool sePuedeVer = filtroActivo is null ||
                             filtroActivo == bombonEditado.Activo;

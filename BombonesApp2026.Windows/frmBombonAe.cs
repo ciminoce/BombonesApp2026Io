@@ -1,5 +1,6 @@
 ﻿using BombonesApp2026.Entidades.Enums;
 using BombonesApp2026.Servicios.DTOs.Bombon;
+using BombonesApp2026.Servicios.DTOs.Caja;
 using BombonesApp2026.Servicios.Intefaces;
 using BombonesApp2026.Windows.Helpers;
 
@@ -7,7 +8,7 @@ namespace BombonesApp2026.Windows
 {
     public partial class frmBombonAe : Form
     {
-        private BombonUpdateDto? _bombonDto;
+        private Servicios.DTOs.Bombon.BombonUpdateDto? _bombonDto;
         private readonly IBombonServicio _bombonServicio;
         private readonly ITipoBombonServicio _tipoServicio;
         private bool _esEdicion = false;
@@ -99,7 +100,7 @@ namespace BombonesApp2026.Windows
                     {
                         if (_bombonDto is null)
                         {
-                            _bombonDto = new BombonUpdateDto();
+                            _bombonDto = new Servicios.DTOs.Bombon.BombonUpdateDto();
                         }
                         _bombonDto.Nombre = txtNombreBombon.Text;
                         _bombonDto.Descripcion = txtDescripcion.Text;
@@ -189,15 +190,18 @@ namespace BombonesApp2026.Windows
             return valido;
         }
 
-        public void SetTipo(BombonUpdateDto? bombonDto)
+        public void SetBombon(Servicios.DTOs.Bombon.BombonUpdateDto? bombonDto)
         {
             _bombonDto = bombonDto;
         }
-        public BombonUpdateDto? GetTipo()
+        public Servicios.DTOs.Bombon.BombonUpdateDto? GetBombon()
         {
             return _bombonDto;
         }
 
-
+        internal void SetCaja(Servicios.DTOs.Caja.CajaUpdateDto? cajaEditDto)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

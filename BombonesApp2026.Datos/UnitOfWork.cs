@@ -1,4 +1,5 @@
 ﻿using BombonesApp2026.Datos.Interfaces;
+using CajaesApp2026.Datos.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace BombonesApp2026.Datos
@@ -12,17 +13,19 @@ namespace BombonesApp2026.Datos
 
         public IFormaDePagoRepositorio FormasDePago { get; }
         public IBombonRepositorio Bombones { get; set; }
-
+        public ICajaRepositorio Cajas { get; set; }
         public UnitOfWork(IFormaDePagoRepositorio formaDePagoRepositorio,
             IClienteRepositorio clienteRepositorio, 
             ITipoBombonRepositorio tipoBombonRepositorio,
             IBombonRepositorio bombonRepositorio,
+            ICajaRepositorio cajaRepositorio,
             BombonesDbContext context)
         {
             FormasDePago = formaDePagoRepositorio;
             Clientes = clienteRepositorio;
             TipoBombones = tipoBombonRepositorio;
             Bombones = bombonRepositorio;
+            Cajas= cajaRepositorio;
             _context = context;
         }
 
