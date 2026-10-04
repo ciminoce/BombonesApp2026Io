@@ -170,19 +170,15 @@ namespace BombonesApp2026.Windows
             return valido;
         }
 
-        public void SetBombon(CajaUpdateDto? cajaDto)
+        public void SetCaja(CajaUpdateDto? cajaDto)
         {
             _cajaDto = cajaDto;
         }
-        public CajaUpdateDto? GetBombon()
+        public CajaUpdateDto? GetCaja()
         {
             return _cajaDto;
         }
 
-        internal void SetCaja(CajaUpdateDto? cajaEditDto)
-        {
-            throw new NotImplementedException();
-        }
 
     }
 }

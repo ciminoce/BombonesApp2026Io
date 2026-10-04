@@ -1,17 +1,9 @@
-﻿using BombonesApp2026.Servicios.Common;
-using BombonesApp2026.Servicios.DTOs.Bombon;
-using BombonesApp2026.Servicios.Intefaces;
+﻿using BombonesApp2026.Servicios.DTOs.Caja;
 using BombonesApp2026.Windows.Helpers;
 using BombonesApp2026.Windows.Helpers.BombonesApp2026.Windows.Helpers;
 using CajaesApp2026.Servicios.Intefaces;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 
 namespace BombonesApp2026.Windows
 {
@@ -116,28 +108,6 @@ namespace BombonesApp2026.Windows
                 }
             }
         }
-        private void ActualizarVista(ResultadoPaginacionDto<BombonListDto> resultado)
-        {
-            _estado.Actualizar(resultado.CantidadRegistros);
-            MostrarEnGrilla(resultado);
-            ActualizarNavegacion();
-
-        }
-        private void ActualizarNavegacion()
-        {
-            lblCantidad.Text = _estado.TextoRegistros();
-            lblPaginas.Text = _estado.TextoPaginas();
-
-            btnPrimero.Enabled = _estado.PuedeIrAnterior();
-            btnAnterior.Enabled = _estado.PuedeIrAnterior();
-            btnSiguiente.Enabled = _estado.PuedeIrSiguiente();
-            btnUltimo.Enabled = _estado.PuedeIrSiguiente();
-
-        }
-        private void MostrarEnGrilla(ResultadoPaginacionDto<BombonListDto> resultado)
-        {
-            _bindingSource.DataSource = resultado.Items;
-        }
 
         private void activosToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -176,25 +146,25 @@ namespace BombonesApp2026.Windows
                 _servicioMensajes.Advertencia("Debe seleccionar una fila");
                 return;
             }
-            BombonListDto bombonListDto = (BombonListDto)_bindingSource.Current;
+            CajaListDto cajaListDto = (CajaListDto)_bindingSource.Current;
             using (var scope = _serviceProvider.CreateScope())
             {
                 var cajaServicio = scope.ServiceProvider
                         .GetRequiredService<ICajaServicio>();
-                var resultadoConsulta = cajaServicio.ObtenerParaBorrar(bombonListDto.ProductoId);
+                var resultadoConsulta = cajaServicio.ObtenerParaBorrar(cajaListDto.ProductoId);
                 if (resultadoConsulta.IsFailure)
                 {
                     ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
                     return;
 
                 }
-                var bombonDeleteDto = resultadoConsulta.Value;
-                if (!_servicioMensajes.Confirmar($"¿Desea borrar el bombón {bombonListDto.NombreBombon}?")) return;
-                if (bombonDeleteDto is null) return;
+                var cajaDeleteDto = resultadoConsulta.Value;
+                if (!_servicioMensajes.Confirmar($"¿Desea borrar la caja {cajaListDto.NombreCaja}?")) return;
+                if (cajaDeleteDto is null) return;
                 try
                 {
                     var resultadoEliminacion = cajaServicio
-                        .Borrar(bombonDeleteDto);
+                        .Borrar(cajaDeleteDto);
                     if (resultadoEliminacion.IsConcurrencyConflict)
                     {
                         ErrorHelper.MostrarErrores(resultadoEliminacion.Errors);
@@ -225,7 +195,7 @@ namespace BombonesApp2026.Windows
             {
                 using (frmCajaAe frm = scope.ServiceProvider.GetRequiredService<frmCajaAe>())
                 {
-                    frm.Text = "Nuevo Tipo de Bombón";
+                    frm.Text = "Nueva Caja";
                     frm.ShowDialog();
                     if (frm.DataChanged)
                     {
@@ -247,7 +217,7 @@ namespace BombonesApp2026.Windows
                         if (sePuedeVer)
                         {
                             var nuevoTipo = _bindingSource.List
-                                .Cast<BombonListDto>()
+                                .Cast<CajaListDto>()
                                 .FirstOrDefault(b => b.ProductoId == nuevoId);
                             if (nuevoTipo is null) return;
                             _bindingSource.Position = _bindingSource.IndexOf(nuevoTipo);
@@ -271,8 +241,8 @@ namespace BombonesApp2026.Windows
                     "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            var bombonListDto = (BombonListDto)_bindingSource.Current;
-            var seleccionadoId = bombonListDto.ProductoId;
+            var cajaListDto = (CajaListDto)_bindingSource.Current;
+            var seleccionadoId = cajaListDto.ProductoId;
             using (var scope = _serviceProvider.CreateScope())
             {
                 try
@@ -280,7 +250,7 @@ namespace BombonesApp2026.Windows
                     var cajaServicio = scope.ServiceProvider
                 .GetRequiredService<ICajaServicio>();
                     var resultadoConsulta = cajaServicio
-                        .ObtenerParaEditar(bombonListDto.ProductoId);
+                        .ObtenerParaEditar(cajaListDto.ProductoId);
                     if (resultadoConsulta.IsFailure)
                     {
                         ErrorHelper.MostrarErrores(resultadoConsulta.Errors);
@@ -290,10 +260,10 @@ namespace BombonesApp2026.Windows
                     using (frmCajaAe frm = scope.ServiceProvider
                         .GetRequiredService<frmCajaAe>())
                     {
-                        frm.Text = "Editar Bombón";
+                        frm.Text = "Editar Caja";
                         frm.SetCaja(cajaEditDto);
                         frm.ShowDialog();
-                        var cajaEditado = frm.GetBombon();
+                        var cajaEditado = frm.GetCaja();
                         if (cajaEditado is null) return;
                         bool sePuedeVer = filtroActivo is null ||
                             filtroActivo == cajaEditado.Activo;
@@ -322,7 +292,7 @@ namespace BombonesApp2026.Windows
                         if (sePuedeVer)
                         {
                             var registroEditado = _bindingSource.List
-                                .Cast<BombonListDto>()
+                                .Cast<CajaListDto>()
                                 .FirstOrDefault(tb => tb.ProductoId == seleccionadoId);
                             if (registroEditado is null) return;
                             _bindingSource.Position = _bindingSource.IndexOf(registroEditado);

@@ -31,27 +31,27 @@ namespace CajaesApp2026.Servicios.Mapeadores
                 CantidadBombones = dto.CantidadBombones
             };
         }
-        public static CajaUpdateDto ToUpdateDto(this Caja Caja)
+        public static CajaUpdateDto ToUpdateDto(this Caja caja)
         {
             return new CajaUpdateDto
             {
-                ProductoId = Caja.ProductoId,
-                Nombre = Caja.Nombre,
-                Descripcion = Caja.Descripcion,
-                Precio = Caja.Precio,
-                Stock = Caja.Stock,
-                EsSurtida = Caja.EsSurtida,
-                CantidadBombones = Caja.CantidadBombones,
-                Activo = Caja.Activo,
-                RowVersion = Caja.RowVersion
+                ProductoId = caja.ProductoId,
+                Nombre = caja.Nombre,
+                Descripcion = caja.Descripcion,
+                Precio = caja.Precio,
+                Stock = caja.Stock,
+                EsSurtida = caja.EsSurtida,
+                CantidadBombones = caja.CantidadBombones,
+                Activo = caja.Activo,
+                RowVersion = caja.RowVersion
             };
         }
-        public static CajaDeleteDto ToDeleteDto(this Caja Caja)
+        public static CajaDeleteDto ToDeleteDto(this Caja caja)
         {
             return new CajaDeleteDto
             {
-                ProductoId = Caja.ProductoId,
-                RowVersion = Caja.RowVersion,
+                ProductoId = caja.ProductoId,
+                RowVersion = caja.RowVersion,
             };
         }
 

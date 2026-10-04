@@ -46,14 +46,6 @@
             toolStripSeparator2 = new ToolStripSeparator();
             tsbCerrar = new ToolStripButton();
             splitContainer1 = new SplitContainer();
-            dgvDatos = new DataGridView();
-            colId = new DataGridViewTextBoxColumn();
-            colNombre = new DataGridViewTextBoxColumn();
-            colPrecio = new DataGridViewTextBoxColumn();
-            colStock = new DataGridViewTextBoxColumn();
-            colCantidadBombones = new DataGridViewTextBoxColumn();
-            colEsSurtida = new DataGridViewCheckBoxColumn();
-            colActivo = new DataGridViewCheckBoxColumn();
             lblPaginas = new Label();
             label1 = new Label();
             btnUltimo = new Button();
@@ -62,6 +54,14 @@
             btnAnterior = new Button();
             btnSiguiente = new Button();
             label2 = new Label();
+            dgvDatos = new DataGridView();
+            colId = new DataGridViewTextBoxColumn();
+            colNombre = new DataGridViewTextBoxColumn();
+            colPrecio = new DataGridViewTextBoxColumn();
+            colStock = new DataGridViewTextBoxColumn();
+            colCantidadBombones = new DataGridViewTextBoxColumn();
+            colEsSurtida = new DataGridViewTextBoxColumn();
+            colActivo = new DataGridViewCheckBoxColumn();
             toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -225,69 +225,6 @@
             splitContainer1.SplitterDistance = 321;
             splitContainer1.TabIndex = 1;
             // 
-            // dgvDatos
-            // 
-            dgvDatos.AllowUserToAddRows = false;
-            dgvDatos.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle1.BackColor = Color.FromArgb(224, 224, 224);
-            dgvDatos.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            dgvDatos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvDatos.Columns.AddRange(new DataGridViewColumn[] { colId, colNombre, colPrecio, colStock, colCantidadBombones, colEsSurtida, colActivo });
-            dgvDatos.Dock = DockStyle.Fill;
-            dgvDatos.Location = new Point(0, 0);
-            dgvDatos.MultiSelect = false;
-            dgvDatos.Name = "dgvDatos";
-            dgvDatos.ReadOnly = true;
-            dgvDatos.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvDatos.Size = new Size(883, 321);
-            dgvDatos.TabIndex = 0;
-            // 
-            // colId
-            // 
-            colId.DataPropertyName = "Ciudadid";
-            colId.HeaderText = "Id";
-            colId.Name = "colId";
-            colId.ReadOnly = true;
-            colId.Visible = false;
-            // 
-            // colNombre
-            // 
-            colNombre.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            colNombre.DataPropertyName = "Bombón";
-            colNombre.HeaderText = "Nombre";
-            colNombre.Name = "colNombre";
-            colNombre.ReadOnly = true;
-            // 
-            // colPrecio
-            // 
-            colPrecio.HeaderText = "Precio";
-            colPrecio.Name = "colPrecio";
-            colPrecio.ReadOnly = true;
-            // 
-            // colStock
-            // 
-            colStock.HeaderText = "Stock";
-            colStock.Name = "colStock";
-            colStock.ReadOnly = true;
-            // 
-            // colCantidadBombones
-            // 
-            colCantidadBombones.HeaderText = "Cant. Bombones";
-            colCantidadBombones.Name = "colCantidadBombones";
-            colCantidadBombones.ReadOnly = true;
-            // 
-            // colEsSurtida
-            // 
-            colEsSurtida.HeaderText = "Surtida";
-            colEsSurtida.Name = "colEsSurtida";
-            colEsSurtida.ReadOnly = true;
-            // 
-            // colActivo
-            // 
-            colActivo.HeaderText = "Activo";
-            colActivo.Name = "colActivo";
-            colActivo.ReadOnly = true;
-            // 
             // lblPaginas
             // 
             lblPaginas.AutoSize = true;
@@ -366,6 +303,76 @@
             label2.TabIndex = 8;
             label2.Text = "Cantidad de Páginas:";
             // 
+            // dgvDatos
+            // 
+            dgvDatos.AllowUserToAddRows = false;
+            dgvDatos.AllowUserToDeleteRows = false;
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(224, 224, 224);
+            dgvDatos.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dgvDatos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvDatos.Columns.AddRange(new DataGridViewColumn[] { colId, colNombre, colPrecio, colStock, colCantidadBombones, colEsSurtida, colActivo });
+            dgvDatos.Dock = DockStyle.Fill;
+            dgvDatos.Location = new Point(0, 0);
+            dgvDatos.MultiSelect = false;
+            dgvDatos.Name = "dgvDatos";
+            dgvDatos.ReadOnly = true;
+            dgvDatos.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvDatos.Size = new Size(883, 321);
+            dgvDatos.TabIndex = 1;
+            // 
+            // colId
+            // 
+            colId.DataPropertyName = "ProductoId";
+            colId.HeaderText = "Id";
+            colId.Name = "colId";
+            colId.ReadOnly = true;
+            colId.Visible = false;
+            // 
+            // colNombre
+            // 
+            colNombre.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            colNombre.DataPropertyName = "NombreCaja";
+            colNombre.HeaderText = "Nombre";
+            colNombre.Name = "colNombre";
+            colNombre.ReadOnly = true;
+            // 
+            // colPrecio
+            // 
+            colPrecio.DataPropertyName = "Precio";
+            colPrecio.HeaderText = "Precio";
+            colPrecio.Name = "colPrecio";
+            colPrecio.ReadOnly = true;
+            // 
+            // colStock
+            // 
+            colStock.DataPropertyName = "Stock";
+            colStock.HeaderText = "Stock";
+            colStock.Name = "colStock";
+            colStock.ReadOnly = true;
+            // 
+            // colCantidadBombones
+            // 
+            colCantidadBombones.DataPropertyName = "CantidadBombones";
+            colCantidadBombones.HeaderText = "Cant. Bombones";
+            colCantidadBombones.Name = "colCantidadBombones";
+            colCantidadBombones.ReadOnly = true;
+            // 
+            // colEsSurtida
+            // 
+            colEsSurtida.DataPropertyName = "EsSurtidaTexto";
+            colEsSurtida.HeaderText = "Surtida";
+            colEsSurtida.Name = "colEsSurtida";
+            colEsSurtida.ReadOnly = true;
+            colEsSurtida.Resizable = DataGridViewTriState.True;
+            colEsSurtida.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // colActivo
+            // 
+            colActivo.DataPropertyName = "Activo";
+            colActivo.HeaderText = "Activo";
+            colActivo.Name = "colActivo";
+            colActivo.ReadOnly = true;
+            // 
             // frmCajas
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -399,7 +406,6 @@
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripButton tsbCerrar;
         private SplitContainer splitContainer1;
-        private DataGridView dgvDatos;
         private ToolStripSeparator toolStripSeparator1;
         private Label lblPaginas;
         private Label label1;
@@ -417,12 +423,13 @@
         private ToolStripComboBox tsCboTipos;
         private ToolStripButton tsbDetalle;
         private ToolStripSeparator toolStripSeparator3;
+        private DataGridView dgvDatos;
         private DataGridViewTextBoxColumn colId;
         private DataGridViewTextBoxColumn colNombre;
         private DataGridViewTextBoxColumn colPrecio;
         private DataGridViewTextBoxColumn colStock;
         private DataGridViewTextBoxColumn colCantidadBombones;
-        private DataGridViewCheckBoxColumn colEsSurtida;
+        private DataGridViewTextBoxColumn colEsSurtida;
         private DataGridViewCheckBoxColumn colActivo;
     }
 }
