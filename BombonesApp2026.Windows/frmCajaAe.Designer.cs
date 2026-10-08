@@ -40,21 +40,21 @@
             label5 = new Label();
             nudStock = new NumericUpDown();
             chkActivo = new CheckBox();
-            label6 = new Label();
-            nudCantidadBombones = new NumericUpDown();
             errorProvider1 = new ErrorProvider(components);
             panel1 = new Panel();
             splitContainer1 = new SplitContainer();
+            dataGridView1 = new DataGridView();
+            colId = new DataGridViewTextBoxColumn();
+            colBombon = new DataGridViewTextBoxColumn();
+            colCantidad = new DataGridViewTextBoxColumn();
             btnEditarBombon = new Button();
             btnEliminarBombon = new Button();
             btnAgregarBombon = new Button();
-            chkEsSurtida = new CheckBox();
-            colCantidad = new DataGridViewTextBoxColumn();
-            colBombon = new DataGridViewTextBoxColumn();
-            colId = new DataGridViewTextBoxColumn();
-            dataGridView1 = new DataGridView();
+            label1 = new Label();
+            txtCantidadBombones = new TextBox();
+            label7 = new Label();
+            txtSurtida = new TextBox();
             ((System.ComponentModel.ISupportInitialize)nudStock).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)nudCantidadBombones).BeginInit();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
@@ -67,7 +67,7 @@
             // btnCancelar
             // 
             btnCancelar.Image = Properties.Resources.cancel_24px;
-            btnCancelar.Location = new Point(665, 412);
+            btnCancelar.Location = new Point(650, 529);
             btnCancelar.Name = "btnCancelar";
             btnCancelar.Size = new Size(75, 60);
             btnCancelar.TabIndex = 10;
@@ -79,7 +79,7 @@
             // btnOK
             // 
             btnOK.Image = Properties.Resources.ok_24px;
-            btnOK.Location = new Point(28, 412);
+            btnOK.Location = new Point(28, 529);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(75, 60);
             btnOK.TabIndex = 9;
@@ -120,13 +120,13 @@
             txtDescripcion.MaxLength = 300;
             txtDescripcion.Multiline = true;
             txtDescripcion.Name = "txtDescripcion";
-            txtDescripcion.Size = new Size(334, 98);
+            txtDescripcion.Size = new Size(334, 69);
             txtDescripcion.TabIndex = 8;
             // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(500, 33);
+            label4.Location = new Point(14, 429);
             label4.Name = "label4";
             label4.Size = new Size(43, 15);
             label4.TabIndex = 6;
@@ -134,16 +134,16 @@
             // 
             // txtPrecio
             // 
-            txtPrecio.Location = new Point(609, 28);
+            txtPrecio.Location = new Point(138, 424);
             txtPrecio.MaxLength = 100;
             txtPrecio.Name = "txtPrecio";
-            txtPrecio.Size = new Size(134, 23);
+            txtPrecio.Size = new Size(119, 23);
             txtPrecio.TabIndex = 8;
             // 
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(500, 63);
+            label5.Location = new Point(31, 141);
             label5.Name = "label5";
             label5.Size = new Size(39, 15);
             label5.TabIndex = 6;
@@ -151,7 +151,7 @@
             // 
             // nudStock
             // 
-            nudStock.Location = new Point(609, 59);
+            nudStock.Location = new Point(140, 137);
             nudStock.Name = "nudStock";
             nudStock.Size = new Size(134, 23);
             nudStock.TabIndex = 12;
@@ -160,28 +160,12 @@
             // 
             chkActivo.AutoSize = true;
             chkActivo.CheckAlign = ContentAlignment.MiddleRight;
-            chkActivo.Location = new Point(683, 136);
+            chkActivo.Location = new Point(318, 487);
             chkActivo.Name = "chkActivo";
             chkActivo.Size = new Size(60, 19);
             chkActivo.TabIndex = 13;
             chkActivo.Text = "Activo";
             chkActivo.UseVisualStyleBackColor = true;
-            // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.Location = new Point(500, 92);
-            label6.Name = "label6";
-            label6.Size = new Size(98, 15);
-            label6.TabIndex = 6;
-            label6.Text = "Cant. Bombones:";
-            // 
-            // nudCantidadBombones
-            // 
-            nudCantidadBombones.Location = new Point(609, 88);
-            nudCantidadBombones.Name = "nudCantidadBombones";
-            nudCantidadBombones.Size = new Size(134, 23);
-            nudCantidadBombones.TabIndex = 12;
             // 
             // errorProvider1
             // 
@@ -192,7 +176,7 @@
             panel1.Controls.Add(splitContainer1);
             panel1.Location = new Point(9, 166);
             panel1.Name = "panel1";
-            panel1.Size = new Size(914, 240);
+            panel1.Size = new Size(734, 240);
             panel1.TabIndex = 14;
             // 
             // splitContainer1
@@ -210,75 +194,9 @@
             splitContainer1.Panel2.Controls.Add(btnEditarBombon);
             splitContainer1.Panel2.Controls.Add(btnEliminarBombon);
             splitContainer1.Panel2.Controls.Add(btnAgregarBombon);
-            splitContainer1.Size = new Size(914, 240);
-            splitContainer1.SplitterDistance = 716;
+            splitContainer1.Size = new Size(734, 240);
+            splitContainer1.SplitterDistance = 574;
             splitContainer1.TabIndex = 0;
-            // 
-            // btnEditarBombon
-            // 
-            btnEditarBombon.Image = Properties.Resources.edit_property_24px;
-            btnEditarBombon.Location = new Point(16, 147);
-            btnEditarBombon.Name = "btnEditarBombon";
-            btnEditarBombon.Size = new Size(168, 60);
-            btnEditarBombon.TabIndex = 9;
-            btnEditarBombon.Text = "Editar Bombón";
-            btnEditarBombon.TextImageRelation = TextImageRelation.ImageAboveText;
-            btnEditarBombon.UseVisualStyleBackColor = true;
-            // 
-            // btnEliminarBombon
-            // 
-            btnEliminarBombon.Image = Properties.Resources.cancel_24px;
-            btnEliminarBombon.Location = new Point(16, 81);
-            btnEliminarBombon.Name = "btnEliminarBombon";
-            btnEliminarBombon.Size = new Size(168, 60);
-            btnEliminarBombon.TabIndex = 9;
-            btnEliminarBombon.Text = "Eliminar Bombón";
-            btnEliminarBombon.TextImageRelation = TextImageRelation.ImageAboveText;
-            btnEliminarBombon.UseVisualStyleBackColor = true;
-            // 
-            // btnAgregarBombon
-            // 
-            btnAgregarBombon.Image = Properties.Resources.ok_24px;
-            btnAgregarBombon.Location = new Point(16, 15);
-            btnAgregarBombon.Name = "btnAgregarBombon";
-            btnAgregarBombon.Size = new Size(168, 60);
-            btnAgregarBombon.TabIndex = 9;
-            btnAgregarBombon.Text = "Agregar Bombón";
-            btnAgregarBombon.TextImageRelation = TextImageRelation.ImageAboveText;
-            btnAgregarBombon.UseVisualStyleBackColor = true;
-            // 
-            // chkEsSurtida
-            // 
-            chkEsSurtida.AutoSize = true;
-            chkEsSurtida.CheckAlign = ContentAlignment.MiddleRight;
-            chkEsSurtida.Location = new Point(500, 136);
-            chkEsSurtida.Name = "chkEsSurtida";
-            chkEsSurtida.Size = new Size(87, 19);
-            chkEsSurtida.TabIndex = 13;
-            chkEsSurtida.Text = "¿Es Surtida?";
-            chkEsSurtida.UseVisualStyleBackColor = true;
-            // 
-            // colCantidad
-            // 
-            colCantidad.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            colCantidad.HeaderText = "Cantidad";
-            colCantidad.Name = "colCantidad";
-            colCantidad.ReadOnly = true;
-            colCantidad.Width = 80;
-            // 
-            // colBombon
-            // 
-            colBombon.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            colBombon.HeaderText = "Bombön";
-            colBombon.Name = "colBombon";
-            colBombon.ReadOnly = true;
-            // 
-            // colId
-            // 
-            colId.HeaderText = "Id";
-            colId.Name = "colId";
-            colId.ReadOnly = true;
-            colId.Visible = false;
             // 
             // dataGridView1
             // 
@@ -290,34 +208,125 @@
             dataGridView1.Location = new Point(0, 0);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
-            dataGridView1.Size = new Size(716, 240);
+            dataGridView1.Size = new Size(574, 240);
             dataGridView1.TabIndex = 0;
+            // 
+            // colId
+            // 
+            colId.HeaderText = "Id";
+            colId.Name = "colId";
+            colId.ReadOnly = true;
+            colId.Visible = false;
+            // 
+            // colBombon
+            // 
+            colBombon.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            colBombon.HeaderText = "Bombön";
+            colBombon.Name = "colBombon";
+            colBombon.ReadOnly = true;
+            // 
+            // colCantidad
+            // 
+            colCantidad.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colCantidad.HeaderText = "Cantidad";
+            colCantidad.Name = "colCantidad";
+            colCantidad.ReadOnly = true;
+            colCantidad.Width = 80;
+            // 
+            // btnEditarBombon
+            // 
+            btnEditarBombon.Image = Properties.Resources.edit_property_24px;
+            btnEditarBombon.Location = new Point(16, 147);
+            btnEditarBombon.Name = "btnEditarBombon";
+            btnEditarBombon.Size = new Size(122, 60);
+            btnEditarBombon.TabIndex = 9;
+            btnEditarBombon.Text = "Editar Bombón";
+            btnEditarBombon.TextImageRelation = TextImageRelation.ImageAboveText;
+            btnEditarBombon.UseVisualStyleBackColor = true;
+            // 
+            // btnEliminarBombon
+            // 
+            btnEliminarBombon.Image = Properties.Resources.cancel_24px;
+            btnEliminarBombon.Location = new Point(16, 81);
+            btnEliminarBombon.Name = "btnEliminarBombon";
+            btnEliminarBombon.Size = new Size(122, 60);
+            btnEliminarBombon.TabIndex = 9;
+            btnEliminarBombon.Text = "Eliminar Bombón";
+            btnEliminarBombon.TextImageRelation = TextImageRelation.ImageAboveText;
+            btnEliminarBombon.UseVisualStyleBackColor = true;
+            // 
+            // btnAgregarBombon
+            // 
+            btnAgregarBombon.Image = Properties.Resources.ok_24px;
+            btnAgregarBombon.Location = new Point(16, 15);
+            btnAgregarBombon.Name = "btnAgregarBombon";
+            btnAgregarBombon.Size = new Size(122, 60);
+            btnAgregarBombon.TabIndex = 9;
+            btnAgregarBombon.Text = "Agregar Bombón";
+            btnAgregarBombon.TextImageRelation = TextImageRelation.ImageAboveText;
+            btnAgregarBombon.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(14, 458);
+            label1.Name = "label1";
+            label1.Size = new Size(118, 15);
+            label1.TabIndex = 6;
+            label1.Text = "Cantidad Bombones:";
+            // 
+            // txtCantidadBombones
+            // 
+            txtCantidadBombones.Location = new Point(138, 453);
+            txtCantidadBombones.MaxLength = 100;
+            txtCantidadBombones.Name = "txtCantidadBombones";
+            txtCantidadBombones.Size = new Size(119, 23);
+            txtCantidadBombones.TabIndex = 8;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(14, 487);
+            label7.Name = "label7";
+            label7.Size = new Size(47, 15);
+            label7.TabIndex = 6;
+            label7.Text = "Surtida:";
+            // 
+            // txtSurtida
+            // 
+            txtSurtida.Location = new Point(138, 482);
+            txtSurtida.MaxLength = 100;
+            txtSurtida.Name = "txtSurtida";
+            txtSurtida.Size = new Size(119, 23);
+            txtSurtida.TabIndex = 8;
             // 
             // frmCajaAe
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(925, 484);
+            ClientSize = new Size(751, 609);
             Controls.Add(panel1);
-            Controls.Add(chkEsSurtida);
             Controls.Add(chkActivo);
-            Controls.Add(nudCantidadBombones);
             Controls.Add(nudStock);
             Controls.Add(btnCancelar);
             Controls.Add(btnOK);
             Controls.Add(txtDescripcion);
-            Controls.Add(label6);
             Controls.Add(label3);
             Controls.Add(label5);
+            Controls.Add(txtSurtida);
+            Controls.Add(label7);
+            Controls.Add(txtCantidadBombones);
+            Controls.Add(label1);
             Controls.Add(txtPrecio);
             Controls.Add(label4);
             Controls.Add(txtNombreCaja);
             Controls.Add(label2);
+            MaximumSize = new Size(767, 648);
+            MinimumSize = new Size(767, 648);
             Name = "frmCajaAe";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "frmCajaAe";
             ((System.ComponentModel.ISupportInitialize)nudStock).EndInit();
-            ((System.ComponentModel.ISupportInitialize)nudCantidadBombones).EndInit();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
             panel1.ResumeLayout(false);
             splitContainer1.Panel1.ResumeLayout(false);
@@ -342,18 +351,19 @@
         private Label label5;
         private NumericUpDown nudStock;
         private CheckBox chkActivo;
-        private Label label6;
-        private NumericUpDown nudCantidadBombones;
         private ErrorProvider errorProvider1;
         private Panel panel1;
         private SplitContainer splitContainer1;
         private Button btnAgregarBombon;
         private Button btnEliminarBombon;
         private Button btnEditarBombon;
-        private CheckBox chkEsSurtida;
         private DataGridView dataGridView1;
         private DataGridViewTextBoxColumn colId;
         private DataGridViewTextBoxColumn colBombon;
         private DataGridViewTextBoxColumn colCantidad;
+        private TextBox txtSurtida;
+        private Label label7;
+        private TextBox txtCantidadBombones;
+        private Label label1;
     }
 }

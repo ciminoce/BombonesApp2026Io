@@ -33,9 +33,9 @@ namespace BombonesApp2026.Windows
                 txtDescripcion.Text = _cajaDto.Descripcion;
                 txtPrecio.Text = _cajaDto.Precio.ToString();
                 nudStock.Value = _cajaDto.Stock;
-                chkEsSurtida.Checked = _cajaDto.EsSurtida;
+                txtSurtida.Text = _cajaDto.EsSurtida?"Si":"No";
                 txtPrecio.Text = _cajaDto.Precio.ToString();
-                nudCantidadBombones.Value = _cajaDto.CantidadBombones;
+                txtCantidadBombones.Text = _cajaDto.CantidadBombones.ToString();
                 chkActivo.Checked = _cajaDto.Activo;
                 _esEdicion = true;
 
@@ -136,7 +136,8 @@ namespace BombonesApp2026.Windows
             txtDescripcion.Clear();
             txtPrecio.Clear();
             nudStock.Value = 0;
-            chkEsSurtida.Checked = false;
+            txtCantidadBombones.Clear();
+            txtSurtida.Clear();
             chkActivo.Checked = true;
             chkActivo.Enabled = false;
             txtNombreCaja.Focus();
@@ -161,12 +162,6 @@ namespace BombonesApp2026.Windows
                 valido = false;
                 errorProvider1.SetError(txtDescripcion, "La descripción no puede tener más de 250 caracteres");
             }
-            if (!decimal.TryParse(txtPrecio.Text, out decimal precio) || precio <= 0)
-            {
-                valido = false;
-                errorProvider1.SetError(txtPrecio, "Precio no válido o fuera de rango");
-            }
-
             return valido;
         }
 
